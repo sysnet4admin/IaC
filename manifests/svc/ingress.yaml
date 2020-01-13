@@ -10,11 +10,11 @@ spec:
       paths:
       - path:
         backend:
-          serviceName: echo-nginx-svc
+          serviceName: echo-hname-svc(default)
           servicePort: 80
-      - path: /in-nginx
+      - path: /ip
         backend:
-          serviceName: in-nginx-svc
+          serviceName: echo-ip-svc
           servicePort: 80
       - path: /your-directory
         backend:
