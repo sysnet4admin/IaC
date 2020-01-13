@@ -10,11 +10,11 @@ spec:
       paths:
       - path:
         backend:
-          serviceName: echo-hname-svc(default)
+          serviceName: hname-default-svc
           servicePort: 80
       - path: /ip
         backend:
-          serviceName: echo-ip-svc
+          serviceName: ip-svc
           servicePort: 80
       - path: /your-directory
         backend:
