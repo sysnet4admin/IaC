@@ -10,7 +10,7 @@ spec:
       paths:
       - path:
         backend:
-          serviceName: hname-default-svc
+          serviceName: hname-svc-default
           servicePort: 80
       - path: /ip
         backend:
