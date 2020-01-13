@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: echo-hname
+  name: np-pods
 spec:
   selector:
-    app: echo-hname 
+    app: np-pods 
   ports:
     - name: http
       protocol: TCP
