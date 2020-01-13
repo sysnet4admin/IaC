@@ -4,7 +4,7 @@ metadata:
   name: echo-hname
 spec:
   selector:
-    app: nginx
+    app: echo-hname 
   ports:
     - name: http
       protocol: TCP
