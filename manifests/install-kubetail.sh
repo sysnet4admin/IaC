@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 # usage: 
-# 1. bash <(curl -s https://raw.githubusercontent.com/sysnet4admin/IaC/master/manifests/install_kubetail.sh) 
+# 1. bash <(curl -s https://raw.githubusercontent.com/sysnet4admin/IaC/master/manifests/install-kubetail.sh) 
 
 curl -O https://raw.githubusercontent.com/johanhaleby/kubetail/master/kubetail
 chmod 744 kubetail
