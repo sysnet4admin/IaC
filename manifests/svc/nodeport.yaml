@@ -4,7 +4,7 @@ metadata:
   name: np-svc
 spec:
   selector:
-    app: np-pod 
+    app: np-pods 
   ports:
     - name: http
       protocol: TCP
