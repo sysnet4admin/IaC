@@ -1,2 +1,0 @@
-# IaC
-Infrastructure as Code
