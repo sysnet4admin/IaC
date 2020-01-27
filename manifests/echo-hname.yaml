@@ -15,5 +15,5 @@ spec:
         app: nginx
     spec:
       containers:
-      - name: sysnet4admin
+      - name: echo-hname
         image: sysnet4admin/echo-hname
