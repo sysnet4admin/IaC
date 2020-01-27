@@ -17,5 +17,3 @@ spec:
       containers:
       - name: sysnet4admin
         image: sysnet4admin/echo-ip
-        ports:
-        - containerPort: 80
