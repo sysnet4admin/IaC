@@ -16,5 +16,6 @@ kubectl apply -f https://$raw_git/resource-reader.yaml
 echo -e "\n###### Check Metrics-Server Service Status #####\n"
 kubectl get service metrics-server -n kube-system
 
-echo -e "\n###### Check Metrics-Server Pod Status #####\n"
+echo -e "###### Wait 10Sec for Container creation #####\n" && sleep 10
+echo -e "###### Check Metrics-Server Pod Status #####\n"
 kubectl get pods -n kube-system -l k8s-app=metrics-server
