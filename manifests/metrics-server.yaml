@@ -97,6 +97,11 @@ spec:
       - name: metrics-server
         image: k8s.gcr.io/metrics-server-amd64:v0.3.6
         args:
+        # Manually Add for lab env(Sysnet4admin/k8s)
+        # skip tls internal usage purpose
+          - --kubelet-insecure-tls
+        # kubelet could use internalIP communication 
+          - --kubelet-preferred-address-types=InternalIP
           - --cert-dir=/tmp
           - --secure-port=4443
         ports:
