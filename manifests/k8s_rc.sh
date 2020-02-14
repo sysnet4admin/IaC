@@ -2,7 +2,6 @@
 # kceq revision by 오리댕이
 # usage: 
 # 1. bash <(curl -s https://raw.githubusercontent.com/sysnet4admin/IaC/master/manifests/k8s_rc.sh) 
-# 2. su - 
 
 if grep -q sysnet4admin ~/.bashrc; then
   echo "k8s_rc already installed"
@@ -14,7 +13,7 @@ echo "source ~/.k8s_rc " >> ~/.bashrc
 
 cat > ~/.k8s_rc <<'EOF'
 #! /usr/bin/env bash
-# HoonJo ver0.5.0
+# HoonJo ver0.5.1
 # https://github.com/sysnet4admin/IaC
 alias kc='kubectl'
 alias kcg='kubectl get'
@@ -175,3 +174,6 @@ exi_chk=($(kubectl get namespaces | tail --lines=+2 | awk '{print $1}'))
 
 
 EOF
+
+#Reload bashrc
+source ~/.bashrc
