@@ -175,5 +175,5 @@ exi_chk=($(kubectl get namespaces | tail --lines=+2 | awk '{print $1}'))
 
 EOF
 
-#Reload bashrc
-source ~/.bashrc
+#Reload k8s_rc
+source ~/.k8s_rc
