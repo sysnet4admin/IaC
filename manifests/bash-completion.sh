@@ -11,4 +11,4 @@ kubectl completion bash >/etc/bash_completion.d/kubectl
 # alias kubectl to k 
 echo 'alias k=kubectl' >> ~/.bashrc
 echo 'complete -F __start_kubectl k' >> ~/.bashrc
-su -
+source ~/.bashrc
