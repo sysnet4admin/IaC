@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nfs-sts
+spec:
+  replicas: 4
+  serviceName: nfs-sts
+  selector:
+    matchLabels:
+      app: nfs-sts
+  template:
+    metadata:
+      labels:
+        app: nfs-sts
+    spec:
+      containers:
+      - name: echo-hname
+        image: sysnet4admin/echo-hname
+        volumeMounts:
+        - name: nfs-vol
+          mountPath: /var/nfs
+      volumes:
+      - name: nfs-vol
+        persistentVolumeClaim:
+          claimName: nfs-pvc
