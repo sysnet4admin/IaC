@@ -1,17 +1,16 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
-  name: nfs-sts
+  name: nfs-pvc-deploy
 spec:
   replicas: 4
-  serviceName: nfs-sts
   selector:
     matchLabels:
-      app: nfs-sts
+      app: nfs-pvc-deploy
   template:
     metadata:
       labels:
-        app: nfs-sts
+        app: nfs-pvc-deploy
     spec:
       containers:
       - name: echo-hname
