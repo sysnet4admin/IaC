@@ -13,11 +13,11 @@ spec:
         app: nfs-ip
     spec:
       containers:
-      - name: echo-hname
-        image: sysnet4admin/echo-hname
+      - name: audit-trail
+        image: sysnet4admin/audit-trail
         volumeMounts:
         - name: nfs-vol
-          mountPath: /var/nfs
+          mountPath: /audit
       volumes:
       - name: nfs-vol
         nfs:

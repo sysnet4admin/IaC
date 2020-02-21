@@ -4,7 +4,7 @@ metadata:
   name: nfs-pvc-sts
 spec:
   replicas: 4
-  serviceName: nfs-pvc-sts
+  serviceName: nfs-pvc-sts #statefulset need it
   selector:
     matchLabels:
       app: nfs-pvc-sts
@@ -14,11 +14,11 @@ spec:
         app: nfs-pvc-sts
     spec:
       containers:
-      - name: echo-hname
-        image: sysnet4admin/echo-hname
+      - name: audit-trail
+        image: sysnet4admin/audit-trail
         volumeMounts:
         - name: nfs-vol
-          mountPath: /var/nfs
+          mountPath: /audit
       volumes:
       - name: nfs-vol
         persistentVolumeClaim:
