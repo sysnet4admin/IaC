@@ -7,7 +7,7 @@ spec:
     storage: 100Mi
   accessModes:
     - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Recycle
+  persistentVolumeReclaimPolicy: Retain
   nfs:
     server: 192.168.1.10
     path: /nfs_shared
