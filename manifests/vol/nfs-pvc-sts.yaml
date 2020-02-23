@@ -1,31 +1,25 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: local-pvc-sts
+  name: nfs-pvc-sts
 spec:
   replicas: 4
-  serviceName: local-pvc-sts #statefulset need it
+  serviceName: nfs-pvc-sts #statefulset need it
   selector:
     matchLabels:
-      app: local-pvc-sts
+      app: nfs-pvc-sts
   template:
     metadata:
       labels:
-        app: local-pvc-sts
+        app: nfs-pvc-sts
     spec:
       containers:
       - name: audit-trail
         image: sysnet4admin/audit-trail
         volumeMounts:
-        - name: local-vol
+        - name: nfs-vol
           mountPath: /audit
-  volumeClaimTemplates:
-  - metadata:
-      name: local-pvc-sts
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: 10Mi
-      storageClassName: local-sc
+      volumes:
+      - name: nfs-vol
+        persistentVolumeClaim:
+          claimName: nfs-pvc
