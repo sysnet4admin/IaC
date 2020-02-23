@@ -19,7 +19,13 @@ spec:
         volumeMounts:
         - name: nfs-vol
           mountPath: /audit
-      volumes:
-      - name: nfs-vol
-        persistentVolumeClaim:
-          claimName: nfs-pvc
+  volumeClaimTemplates:
+  - metadata:
+      name: nfs-pvc
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Mi
+      storageClassName: nfs-storage
