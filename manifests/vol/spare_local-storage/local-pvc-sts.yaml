@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: local-pvc-sts
+spec:
+  replicas: 4
+  serviceName: local-pvc-sts #statefulset need it
+  selector:
+    matchLabels:
+      app: local-pvc-sts
+  template:
+    metadata:
+      labels:
+        app: local-pvc-sts
+    spec:
+      containers:
+      - name: audit-trail
+        image: sysnet4admin/audit-trail
+  volumeClaimTemplates:
+  - metadata:
+      name: local-pvc-sts
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: local-sc
