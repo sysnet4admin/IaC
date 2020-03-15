@@ -24,7 +24,6 @@ EOF
 yum install yum-utils -y 
 yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 
-
 # Set SELinux in permissive mode (effectively disabling it)
 setenforce 0
 sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
@@ -34,20 +33,15 @@ cat <<EOF >  /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
 EOF
-
 modprobe br_netfilter
 
-# local small dns 
-cat <<EOF >  /etc/hosts
-192.168.1.10 m-k8s 
-192.168.1.101 w1-k8s
-192.168.1.102 w2-k8s
-192.168.1.103 w3-k8s
-EOF
+# local small dns & vagrant cannot parse and delivery shell code.
+echo "192.168.1.10 m-k8s" > /etc/hosts
+for (( i=1; i<=$1; i++  )); do echo "192.168.1.10$i w$i-k8s" >> /etc/hosts; done
+
 
 # config DNS  
 cat <<EOF > /etc/resolv.conf
 nameserver 1.1.1.1 #cloudflare DNS
 nameserver 8.8.8.8 #Google DNS
-nameserver 168.126.63.1 #KT DNS
 EOF
