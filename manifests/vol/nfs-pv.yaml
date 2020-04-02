@@ -6,7 +6,7 @@ spec:
   capacity:
     storage: 100Mi
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
   nfs:
     server: 192.168.1.10
