@@ -12,13 +12,13 @@ spec:
       labels:
         app: use-pvc
     spec:
-      volumes:
-      - name: pvc-vol
-        persistentVolumeClaim:
-          claimName: claim-pvc # same name of pvc that was created
       containers:
       - name: echo-nginx
         image: sysnet4admin/echo-nginx
         volumeMounts:
         - name: pvc-vol # same name of volumes's name 
           mountPath: /pvc-vol
+      volumes:
+      - name: pvc-vol
+        persistentVolumeClaim:
+          claimName: claim-pvc # same name of pvc that was created
