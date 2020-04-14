@@ -96,7 +96,7 @@ spec:
           image: quay.io/external_storage/nfs-client-provisioner:latest
           volumeMounts:
             - name: nfs-client-svr-v
-              mountPath: /persistentvolumes
+              mountPath: /persistentvolumes # NEVER change  
           env:
             - name: PROVISIONER_NAME # do not change
               value: sc-provisioner # SAME AS PROVISIONER NAME VALUE IN STORAGECLASS
