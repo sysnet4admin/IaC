@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: use-pvc 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: use-pvc
+  template:
+    metadata:
+      labels:
+        app: use-pvc
+    spec:
+      volumes:
+      - name: pvc-vol
+        persistentVolumeClaim:
+          claimName: claim-pvc  # same name of pvc that was created
+      containers:
+      - name: echo-nginx
+        image: sysnet4admin/echo-nginx
+        volumeMounts:
+        - name: pvc-vol # same name of volumes's name 
+          mountPath: /pvc-vol
