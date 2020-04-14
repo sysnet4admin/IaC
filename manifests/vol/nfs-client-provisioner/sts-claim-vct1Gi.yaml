@@ -1,5 +1,6 @@
+---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: use-pvc 
 spec:
@@ -7,18 +8,24 @@ spec:
   selector:
     matchLabels:
       app: use-pvc
+  serviceName: use-pvc
   template:
     metadata:
       labels:
         app: use-pvc
     spec:
-      volumes:
-      - name: pvc-vol
-        persistentVolumeClaim:
-          claimName: claim-pvc # same name of pvc that was created
       containers:
       - name: echo-nginx
         image: sysnet4admin/echo-nginx
         volumeMounts:
-        - name: pvc-vol # same name of volumes's name 
+        - name: vct-vol # same name of volumes's name 
           mountPath: /pvc-vol
+  volumeClaimTemplates:
+  - metadata:
+      name: vct-vol
+    spec:
+      accessModes: [ "ReadWriteMany" ]
+      storageClassName: "nfs-sc"
+      resources:
+        requests:
+          storage: 1Gi
