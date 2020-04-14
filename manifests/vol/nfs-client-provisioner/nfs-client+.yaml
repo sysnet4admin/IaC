@@ -20,7 +20,7 @@ metadata:
   name: leader-locking-nfs-provisioner
 subjects:
   - kind: ServiceAccount
-    name: nfs-provisioner
+    name: nfs-client-provisioner
     # replace with namespace where provisioner is deployed
     namespace: default
 roleRef:
@@ -60,7 +60,7 @@ metadata:
   name: run-nfs-provisioner
 subjects:
   - kind: ServiceAccount
-    name: nfs-provisioner
+    name: nfs-client-provisioner
      # replace with namespace where provisioner is deployed
     namespace: default
 roleRef:
