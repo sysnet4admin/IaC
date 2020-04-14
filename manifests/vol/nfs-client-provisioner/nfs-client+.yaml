@@ -92,20 +92,20 @@ spec:
     spec:
       serviceAccountName: nfs-client-provisioner
       containers:
-        - name: nfs-client-svr(quay_based) 
+        - name: nfs-client-svr 
           image: quay.io/external_storage/nfs-client-provisioner:latest
-      volumeMounts:
-        - name: nfs-client-svr-v
-          mountPath: /PersistentVolumes
-      env:
-        - name: PROVISIONER_NAME # do not change
-          value: sc-provisioner # SAME AS PROVISIONER NAME VALUE IN STORAGECLASS
-        - name: NFS_SERVER # do not change
-          value: 192.168.1.10 # Ip of the NFS SERVER
-        - name: NFS_PATH # do not change
-          value: /nfs_shared  # path to nfs directory setup
-    volumes:
-     - name: nfs-client-svr-v # same as volumemouts name
-       nfs:
-         server: 192.168.1.10
-         path: /nfs_shared 
+          volumeMounts:
+            - name: nfs-client-svr-v
+              mountPath: /PersistentVolumes
+          env:
+            - name: PROVISIONER_NAME # do not change
+              value: sc-provisioner # SAME AS PROVISIONER NAME VALUE IN STORAGECLASS
+            - name: NFS_SERVER # do not change
+              value: 192.168.1.10 # Ip of the NFS SERVER
+            - name: NFS_PATH # do not change
+              value: /nfs_shared  # path to nfs directory setup
+      volumes:
+       - name: nfs-client-svr-v # same as volumemouts name
+         nfs:
+           server: 192.168.1.10
+           path: /nfs_shared 
