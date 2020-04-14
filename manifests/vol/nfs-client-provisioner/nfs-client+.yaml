@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: nfs-provisioner
+  name: nfs-client-provisioner
 #Role and Binding 
 ---
 kind: Role
@@ -67,3 +67,45 @@ roleRef:
   kind: ClusterRole
   name: nfs-provisioner-runner
   apiGroup: rbac.authorization.k8s.io
+#Create StorageClass & Provisioner
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: nfs-sc
+provisioner: sc-provisioner
+#Create dynamic nfs-client  
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-client-svr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nfs-client-svr
+  template:
+    metadata:
+      labels:
+        app: nfs-client-svr
+    spec:
+      serviceAccountName: nfs-client-provisioner
+      containers:
+        - name: nfs-client-svr(quay_based) 
+          image: quay.io/external_storage/nfs-client-provisioner:latest
+      volumeMounts:
+        - name: nfs-client-svr-v
+          mountPath: /PersistentVolumes
+      env:
+        - name: PROVISIONER_NAME # do not change
+          value: sc-provisioner # SAME AS PROVISIONER NAME VALUE IN STORAGECLASS
+        - name: NFS_SERVER # do not change
+          value: 192.168.1.10 # Ip of the NFS SERVER
+        - name: NFS_PATH # do not change
+          value: /nfs_shared  # path to nfs directory setup
+    volumes:
+     - name: nfs-client-svr-v # same as volumemouts name
+       nfs:
+         server: 192.168.1.10
+         path: /nfs_shared 
