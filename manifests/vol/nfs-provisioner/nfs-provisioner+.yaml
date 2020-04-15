@@ -137,6 +137,7 @@ spec:
         app: nfs-provisioner
     spec:
       serviceAccount: nfs-provisioner
+      nodeName: w1-k8s #Assign to w1-k8s only
       containers:
         - name: nfs-provisioner
           image: quay.io/kubernetes_incubator/nfs-provisioner:latest
