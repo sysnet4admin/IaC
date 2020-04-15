@@ -2,17 +2,17 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: use-svr-pvc
+  name: add-svr-pvc
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: use-svr-pvc
-  serviceName: use-svr-pvc
+      app: add-svr-pvc
+  serviceName: add-svr-pvc
   template:
     metadata:
       labels:
-        app: use-svr-pvc
+        app: add-svr-pvc
     spec:
       containers:
       - name: echo-nginx
