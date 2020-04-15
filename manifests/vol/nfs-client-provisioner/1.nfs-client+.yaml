@@ -79,23 +79,23 @@ provisioner: sc-provisioner
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nfs-client-svr
+  name: nfs-client
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: nfs-client-svr
+      app: nfs-client
   template:
     metadata:
       labels:
-        app: nfs-client-svr
+        app: nfs-client
     spec:
       serviceAccountName: nfs-client-provisioner
       containers:
-        - name: nfs-client-svr 
+        - name: nfs-client 
           image: quay.io/external_storage/nfs-client-provisioner:latest
           volumeMounts:
-            - name: nfs-client-svr-v
+            - name: nfs-client-v
               mountPath: /persistentvolumes # NEVER change  
           env:
             - name: PROVISIONER_NAME # do not change
@@ -105,7 +105,7 @@ spec:
             - name: NFS_PATH # do not change
               value: /nfs_shared  # path to nfs directory setup
       volumes:
-       - name: nfs-client-svr-v # same as volumemouts name
+       - name: nfs-client-v # same as volumemouts name
          nfs:
            server: 192.168.1.10
            path: /nfs_shared 
