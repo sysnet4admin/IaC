@@ -2,27 +2,27 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: use-pvc
+  name: use-svr-pvc
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: use-pvc
-  serviceName: use-pvc
+      app: use-svr-pvc
+  serviceName: use-svr-pvc
   template:
     metadata:
       labels:
-        app: use-pvc
+        app: use-svr-pvc
     spec:
       containers:
       - name: echo-nginx
         image: sysnet4admin/echo-nginx
         volumeMounts:
-        - name: vct-vol # same name of volumes's name
+        - name: vct-svr-vol # same name of volumes's name
           mountPath: /pvc-vol
   volumeClaimTemplates:
   - metadata:
-      name: vct-vol
+      name: vct-svr-vol
     spec:
       accessModes: [ "ReadWriteMany" ]
       storageClassName: "nfs-svr-sc"
