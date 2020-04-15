@@ -192,7 +192,7 @@ spec:
           imagePullPolicy: "IfNotPresent"
           volumeMounts:
             - name: export-volume  
-              mountPath: /nfs_provisioned_vol # name & location changable for location.  
+              mountPath: /export # must test before it change
       volumes:
         - name: export-volume # same as volumemouts name
           hostPath:
