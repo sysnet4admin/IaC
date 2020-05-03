@@ -19,7 +19,7 @@ systemctl enable --now docker
 #netaddr==0.7.19
 #pbr==5.2.0
 #hvac==0.8.2
-#jmespath==0.9.4
+#jmespath==0.1.4
 #ruamel.yaml==0.15.96
 pip3.6 install -r /root/kubespray/requirements.txt
 
