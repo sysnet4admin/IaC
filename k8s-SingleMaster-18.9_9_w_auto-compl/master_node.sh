@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 
 # init kubernetes 
-kubeadm init --token 123456.1234567890123456 --kubernetes-version v1.16.3 \
---pod-network-cidr=172.16.0.0/16 --apiserver-advertise-address=192.168.1.10 
+kubeadm init --token 123456.1234567890123456 \
+--pod-network-cidr=172.16.0.0/16 --apiserver-advertise-address=192.168.1.10
 
 # config for master node only 
 mkdir -p $HOME/.kube
