@@ -32,7 +32,6 @@ Vagrant.configure("2") do |config|
 
   (1..N).each do |i|
     config.vm.define "w#{i}-k8s" do |cfg|
-    
       cfg.vm.box = "sysnet4admin/CentOS-k8s"
       cfg.vm.provider "virtualbox" do |vb|
         vb.name = "w#{i}-k8s(github_SysNet4Admin)"
