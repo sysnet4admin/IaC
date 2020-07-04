@@ -9,8 +9,8 @@ yum install git -y
 yum install docker -y && systemctl enable --now docker
 
 # install kubernetes and kubectl will install only master node 
-if [ $1 = 'install_kubectl' ]; then
-  yum install kubectl-1.16.3-0 -y
+if [ $2 = 'install_kubectl' ]; then
+  yum install kubectl-$1 -y
 fi
-yum install kubelet-1.16.3-0 kubeadm-1.16.3-0 -y 
+yum install kubelet-$1 kubeadm-$1 -y 
 systemctl enable --now kubelet
