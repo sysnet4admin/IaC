@@ -8,4 +8,3 @@ RUN cp target/app-in-host.jar /opt/app-in-image.jar
 WORKDIR /opt
 EXPOSE 18080
 ENTRYPOINT [ "java", "-jar", "app-in-image.jar" ]
-
