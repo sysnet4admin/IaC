@@ -8,7 +8,7 @@ cp tls.crt $certdir
 yum -y install sshpass
 for i in {1..3}
   do
-    sshpass -p vagrant ssh -o StrictHostKeyChecking=no root@w192.168.1.10$i mkdir -p $certdir
+    sshpass -p vagrant ssh -o StrictHostKeyChecking=no root@192.168.1.10$i mkdir -p $certdir
     sshpass -p vagrant scp tls.crt 192.168.1.10$i:$certdir
 done
 
