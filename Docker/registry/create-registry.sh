@@ -4,7 +4,7 @@ mkdir /data
 mkdir -p $certdir
 openssl req -x509 -nodes -newkey rsa:4096 -keyout tls.key -out tls.crt -days 365 \
  -config tls.req -extensions v3_req
-cp -f tls.crt $certdir
+cp tls.crt $certdir
 yum -y install sshpass
 for i in {1..3}
   do
