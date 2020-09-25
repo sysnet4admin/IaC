@@ -6,9 +6,9 @@ rm -rf $certdir
 
 yum -y install sshpass
 for i in {1..3}
-do
-  sshpass -p vagrant ssh -o StrictHostKeyChecking=no root@192.168.1.10$i rm -rf $certdir
-done
+  do
+    sshpass -p vagrant ssh -o StrictHostKeyChecking=no root@192.168.1.10$i rm -rf $certdir
+  done
 
 yum remove sshpass -y
 docker rm -f registry
