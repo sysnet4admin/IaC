@@ -1,6 +1,6 @@
 FROM openjdk:8
 LABEL description="Echo IP Java Application"
-EXPOSE 18080
+EXPOSE 60433
 RUN git clone https://github.com/iac-source/inbuilder.git
 WORKDIR inbuilder
 RUN chmod 755 mvnw
