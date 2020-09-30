@@ -3,7 +3,7 @@ certdir=/etc/docker/certs.d/192.168.1.10:8443
 mkdir /data
 mkdir -p $certdir
 openssl req -x509 -nodes -newkey rsa:4096 -keyout tls.key -out tls.crt -days 365 \
--config tls.req -extensions v3_req
+-config tls.csr -extensions v3_req
 cp tls.crt $certdir
 yum install sshpass -y 
 for i in {1..3}
