@@ -1,4 +1,4 @@
-#PowerShell 
+#!/bin/powershell
 Param (
 [Parameter(Mandatory=$true)]
 $IPwPort

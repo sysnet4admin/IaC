@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 # kceq revision by 오리댕이
 # usage: 
 # 1. bash <(curl -s https://raw.githubusercontent.com/sysnet4admin/IaC/master/manifests/k8s_rc.sh) 

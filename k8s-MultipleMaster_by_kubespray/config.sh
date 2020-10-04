@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
 # vim configuration 
 echo 'alias vi=vim' >> /etc/profile

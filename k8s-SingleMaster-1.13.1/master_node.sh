@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
 # init kubernetes 
 kubeadm init --token 123456.1234567890123456 --token-ttl 0 \

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 certdir=/etc/docker/certs.d/192.168.1.10:8443
 rm -f tls.key tls.crt
 rm -rf /data
