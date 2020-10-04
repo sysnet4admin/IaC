@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 #Usage: 
 #1. bash <(curl -s https://raw.githubusercontent.com/sysnet4admin/IaC/master/manifests/bash-completion.sh) 
 
