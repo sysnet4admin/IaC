@@ -1,15 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
+  name: porter-svc
   annotations:
     lb.kubesphere.io/v1alpha1: porter
     protocol.porter.kubesphere.io/v1alpha1: layer2
-  name: porter-svc
 spec:
-  selector:
-    app: nginx
-  type:  LoadBalancer
   ports:
-    - name: http
-      port: 8021
+    - port: 80 # access port 
       targetPort: 80
+  selector:
+    app: lb-hname-pods # expose app label
+  type:  LoadBalancer

@@ -4,7 +4,7 @@ metadata:
   name: metallb-svc
 spec:
   ports:
-  - port: 8011
+  - port: 80 # access port 
     targetPort: 80
   selector:
     app: lb-hname-pods # expose app label
