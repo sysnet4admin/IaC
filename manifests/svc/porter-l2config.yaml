@@ -1,0 +1,8 @@
+apiVersion: network.kubesphere.io/v1alpha1
+kind: Eip
+metadata:
+    name: eip-sample-pool
+spec:
+    address: 192.168.1.21-192.168.1.23
+    protocol: layer2
+    disable: false
