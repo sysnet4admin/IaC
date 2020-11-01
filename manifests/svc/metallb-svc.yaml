@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: metallb-svc
+spec:
+  ports:
+  - port: 8011
+    targetPort: 80
+  selector:
+    app: lb-hname-pods # expose app label
+  type: LoadBalancer
