@@ -8,3 +8,4 @@
 curl -O https://raw.githubusercontent.com/johanhaleby/kubetail/master/kubetail
 chmod 755 kubetail
 mv ~/kubetail /usr/local/bin
+echo "kubetail install successfully"
