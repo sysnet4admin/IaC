@@ -176,3 +176,5 @@ EOF
 
 #Reload rc
 su - 
+
+echo "k8s_rc install successfully"

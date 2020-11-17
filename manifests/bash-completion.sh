@@ -14,3 +14,5 @@ echo 'complete -F __start_kubectl k' >> ~/.bashrc
 
 #Reload rc
 su - 
+
+echo "k8s bash-completion install successfully"
