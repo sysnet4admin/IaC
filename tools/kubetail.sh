@@ -3,7 +3,7 @@
 
 # usage: 
 # 1. Create 
-# - bash <(curl -s  https://raw.githubusercontent.com/sysnet4admin/IaC/master/manifests/kubetail.sh) 
+# - bash <(curl -s  https://raw.githubusercontent.com/sysnet4admin/IaC/master/tools/kubetail.sh)
 
 curl -O https://raw.githubusercontent.com/johanhaleby/kubetail/master/kubetail
 chmod 755 kubetail
