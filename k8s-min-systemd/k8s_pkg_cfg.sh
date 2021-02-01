@@ -20,9 +20,7 @@ systemctl enable --now kubelet
 # docker daemon config for systemd from cgroupfs & restart 
 cat <<EOF > /etc/docker/daemon.json
 {
-  "exec-opts": ["native.cgroupdriver=systemd"],
-  "log-driver": "json-file",
-  "log-opts": {"max-size": "100m"}
+  "exec-opts": ["native.cgroupdriver=systemd"]
 }
 EOF
 systemctl daemon-reload && systemctl restart docker
