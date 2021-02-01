@@ -31,4 +31,4 @@ sed -i "s,-H fd:// --containerd=/run/containerd/containerd.sock,--exec-opt nativ
 sed -i 's,--n,--cgroup-driver=systemd --n,g' /var/lib/kubelet/kubeadm-flags.env # for 1.20
 # sed -i 's,cgroupfs,systemd,g' /var/lib/kubelet/kubeadm-flags.env # 1.18 or previous version
 # apply systemd 
-systemctl daemon-reload && systemctl restart docker
+systemctl daemon-reload && systemctl restart docker && systemctl restart kubelet 
