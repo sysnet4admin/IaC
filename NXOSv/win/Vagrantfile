@@ -78,7 +78,7 @@ Vagrant.configure("2") do |config|
       vb.memory = 6144
       vb.customize ["modifyvm", :id, "--uart1", "0x252", "2"]
       #var cannot apply for pipe. so pipe need to change manually cur: nxosv252
-      vb.customize ["modifyvm", :id,'--uartmode1","server','\\\.\pipe\nxosv252']
+      vb.customize ["modifyvm", :id,'--uartmode1','server','\\\.\pipe\nxosv252']
       vb.customize ['modifyvm', :id,'--nicpromisc2','allow-all']
       vb.customize ['modifyvm', :id,'--nicpromisc3','allow-all']
       vb.customize ['modifyvm', :id,'--nicpromisc4','allow-all']
