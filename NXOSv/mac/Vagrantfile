@@ -1,0 +1,108 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+## configuration variables ##
+# last digit of ip. it can use port number too.
+hst_A = '192.168.3'
+sdn_A = 10
+nx_A1 = 251
+nx_A2 = 252
+## /configuration variables ##
+
+Vagrant.configure("2") do |config|
+
+  #NXOSv 7 version 
+  config.vm.define "nxosv#{nx_A1}" do |cfg|
+    cfg.vm.box = "sysnet4admin/nxosv_v7"
+    cfg.ssh.insert_key = false 
+    cfg.vm.boot_timeout = 480
+    cfg.vm.guest = :freebsd
+    cfg.vm.base_mac = "F000F#{nx_A1}F000" #for CDP test
+    #cfg.vbguest.auto_update = false #depends on plugin
+    cfg.vm.network "forwarded_port", guest: 22, host: "60#{nx_A1}", auto_correct: true, id: "ssh"
+    #auto_config should need to avoid ssh_timeout
+    cfg.vm.network "private_network", virtualbox__intnet: "eth1/1", auto_config: false
+    cfg.vm.network "private_network", virtualbox__intnet: "eth1/2", auto_config: false
+    cfg.vm.network "private_network", virtualbox__intnet: "eth1/3", auto_config: false
+    cfg.vm.synced_folder "../data", "/vagrant", disabled: true
+
+    #VM name & HW config
+    cfg.vm.provider "virtualbox" do |vb|
+      vb.name = "NXOSv#{nx_A1}(github_SysNet4Admin)"
+      vb.customize ["modifyvm", :id, "--groups", "/NXOSv_SDN(github-SysNet4Admin)"]
+      vb.memory = 4096
+      #var cannot apply for pipe. so pipe need to change manually cur: nxosv251
+      vb.customize ['modifyvm', :id,'--uartmode1', 'server', '/tmp/nxosv251']
+      vb.customize ['modifyvm', :id,'--nicpromisc2','allow-all']
+      vb.customize ['modifyvm', :id,'--nicpromisc3','allow-all']
+      vb.customize ['modifyvm', :id,'--nicpromisc4','allow-all']
+    end 
+    
+    #instead of 'ifconfig Eth1-1 inet 192.168.1.251 netmask 255.255.255.0'
+    #NXOSv7 lighter than NXOSv9. so sleep 120. It depends on the host perf 
+    if VAGRANT_COMMAND = "up"
+       cfg.ssh.username = "admin"
+       cfg.ssh.password = "vagrant"
+       cfg.ssh.shell = "sleep 120 ; conf t ; ho nxosv#{nx_A1} ; int e1/1 ; no sw ; ip ad #{hst_A}.#{nx_A1}/24 ; copy r s"
+    end
+
+  end
+  
+  #NXOSv 9 version 
+  config.vm.define "nxosv#{nx_A2}" do |cfg|
+    cfg.vm.box = "sysnet4admin/nxosv_v9"
+    cfg.ssh.insert_key = false 
+    cfg.vm.boot_timeout = 960
+    cfg.vm.guest = :freebsd
+    cfg.vm.base_mac = "F000F#{nx_A2}F000" #for CDP test
+    #cfg.vbguest.auto_update = false #depends on plugin
+    cfg.vm.network "forwarded_port", guest: 22, host: 60#{nx_A2}, auto_correct: true, id: "ssh"
+    #auto_config should need to avoid ssh_timeout
+    cfg.vm.network "private_network", virtualbox__intnet: "eth1/1", auto_config: false
+    cfg.vm.network "private_network", virtualbox__intnet: "eth1/2", auto_config: false
+    cfg.vm.network "private_network", virtualbox__intnet: "eth1/3", auto_config: false
+    cfg.vm.synced_folder "../data", "/vagrant", disabled: true
+
+    #instead of 'ifconfig Eth1-1 inet 192.168.1.252 netmask 255.255.255.0'
+    #NXOSv9 heavier than NXOSv7. so sleep 240. It depends on the host perf
+    if VAGRANT_COMMAND = "up"
+       cfg.ssh.username = "admin"
+       cfg.ssh.password = "vagrant"
+       cfg.ssh.shell = "sleep 240 ; conf t ; ho nxosv#{nx_A2} ; int e1/1 ; no sw ; ip ad #{hst_A}.#{nx_A2}/24 ; copy r s"
+    end
+
+    #VM name & HW config
+    cfg.vm.provider "virtualbox" do |vb|
+      vb.name = "NXOSv#{nx_A2}(github_SysNet4Admin)"
+      vb.customize ["modifyvm", :id, "--groups", "/NXOSv_SDN(github-SysNet4Admin)"]
+      vb.memory = 6144
+      vb.customize ["modifyvm", :id, "--uart1", "0x252", "2"]
+      #var cannot apply for pipe. so pipe need to change manually cur: nxosv252
+      vb.customize ["modifyvm", :id, "--uartmode1", "server", '/tmp/nxosv252']
+      vb.customize ['modifyvm', :id,'--nicpromisc2','allow-all']
+      vb.customize ['modifyvm', :id,'--nicpromisc3','allow-all']
+      vb.customize ['modifyvm', :id,'--nicpromisc4','allow-all']
+    end 
+  end
+
+  #===============================#
+  # SDN-Controller (CentOS-Based) #
+  #===============================#
+  
+  config.vm.define "SDN-CTRL" do |cfg|
+    cfg.vm.box = "sysnet4admin/CentOS-k8s"
+    cfg.vm.host_name = "nxos-ctrl"
+    cfg.vm.network "private_network", virtualbox__intnet: "eth1", ip: "#{hst_A}.#{sdn_A}" 
+    cfg.vm.network "forwarded_port", guest: 22, host: "600#{sdn_A}", auto_correct: true, id: "ssh"
+    cfg.vm.synced_folder "../data", "/vagrant", disabled: true
+    #cfg.ssh.sudo_command = "mkdir hoonjo"
+    #cfg.vm.provision "shell", inline: $test
+    #cfg.vm.provision "shell", inline: "yum install epel-release git vim-enhanced -y"
+    cfg.vm.provider "virtualbox" do |vb|
+      vb.name = "SDN-CTRL(github_SysNet4Admin)"
+      vb.customize ["modifyvm", :id, "--groups", "/NXOSv_SDN(github-SysNet4Admin)"]
+      vb.memory = 1024
+    end
+  end
+  
+end
