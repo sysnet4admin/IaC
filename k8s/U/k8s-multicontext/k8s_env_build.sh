@@ -5,8 +5,8 @@ echo 'alias vi=vim' >> /etc/profile
 
 # swapoff -a to disable swapping
 swapoff -a
-# sed to comment the swap partition in /etc/fstab
-sed -i.bak -r 's/(.+ swap .+)/#\1/' /etc/fstab
+# sed to comment the swap partition in /etc/fstab (Rmv blank)
+sed -i.bak -r 's/(.+swap.+)/#\1/' /etc/fstab
 
 # add kubernetes repo
 apt update && apt install apt-transport-https curl
