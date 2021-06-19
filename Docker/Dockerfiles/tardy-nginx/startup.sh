@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-sleep 1 && echo "deep sleep" > /var/log/sleep.log
-sleep 59
+
+echo "deep sleep" > /var/log/sleep.log && sleep 60
 nginx -g "daemon off;" 
