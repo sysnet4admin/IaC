@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 echo "deep sleep" > /var/log/sleep.log && sleep 60
-nginx -g "daemon off;" 
+touch /tmp/healthy-on && nginx -g "daemon off;" 
