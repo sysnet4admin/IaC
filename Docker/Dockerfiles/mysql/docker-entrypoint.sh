@@ -216,10 +216,9 @@ docker_setup_env() {
 	# Initialize values that might be stored in a file
 	file_env 'MYSQL_ROOT_HOST' '%'
 	file_env 'MYSQL_DATABASE'
-	file_env 'MYSQL_USER'
-	file_env 'MYSQL_PASSWORD'
-#	file_env 'MYSQL_ROOT_PASSWORD'
-	file_env 'MYSQL_ROOT_PASSWORD' 'root'
+	file_env 'MYSQL_USER' 
+	file_env 'MYSQL_PASSWORD' 
+	file_env 'MYSQL_ROOT_PASSWORD' 
 
 	declare -g DATABASE_ALREADY_EXISTS
 	if [ -d "$DATADIR/mysql" ]; then
