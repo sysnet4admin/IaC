@@ -3,11 +3,6 @@
 # - https://stackoverflow.com/questions/64940013/on-gke-dcgm-exporter-pod-fails-to-run-if-the-nvidia-com-gpu-resource-is-not-all
 
 apiVersion: v1
-kind: Namespace
-metadata:
-  name: default
----
-apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: dcgm-exporter
