@@ -1,3 +1,7 @@
+# Source: 
+# - https://github.com/NVIDIA/gpu-monitoring-tools/issues/96
+# - https://stackoverflow.com/questions/64940013/on-gke-dcgm-exporter-pod-fails-to-run-if-the-nvidia-com-gpu-resource-is-not-all
+
 apiVersion: v1
 kind: Namespace
 metadata:
