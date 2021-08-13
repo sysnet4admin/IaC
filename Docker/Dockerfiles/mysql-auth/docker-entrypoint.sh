@@ -216,9 +216,9 @@ docker_setup_env() {
 	# Initialize values that might be stored in a file
 	file_env 'MYSQL_ROOT_HOST' '%'
 	file_env 'MYSQL_DATABASE'
-	file_env 'MYSQL_USER' 
-	file_env 'MYSQL_PASSWORD' 
-	file_env 'MYSQL_ROOT_PASSWORD' 
+	file_env 'MYSQL_USER'
+	file_env 'MYSQL_PASSWORD'
+	file_env 'MYSQL_ROOT_PASSWORD'
 
 	declare -g DATABASE_ALREADY_EXISTS
 	if [ -d "$DATADIR/mysql" ]; then
@@ -360,16 +360,16 @@ _mysql_want_help() {
 
 _main() {
         # custom-by-hoon
-	if [ "${MYSQL_USER_ID}" != 'db-user' ]; then
+        if [ "${MYSQL_USER_ID}" != 'db-user' ]; then
                echo "USER_ID unmatched"
-               exit 1 
-        fi 
-	if [ "${MYSQL_USER_PASSWORD}" != 'hoon' ]; then
+               exit 1
+        fi
+        if [ "${MYSQL_USER_PASSWORD}" != 'hoon' ]; then
                echo "PASSWORD unmatched"
-               exit 1 
-        fi 
+               exit 1
+        fi
 
-        # if command starts with an option, prepend mysqld
+	# if command starts with an option, prepend mysqld
 	if [ "${1:0:1}" = '-' ]; then
 		set -- mysqld "$@"
 	fi
