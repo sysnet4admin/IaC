@@ -7,9 +7,9 @@ cl_val = [["bk8s", 110, 11,2],
           ["hk8s", 120, 12,1],
           ["wk8s", 130, 13,1]]
 # each of components to install 
-k8s_V = '1.20.2-00'            # Kubernetes 
-docker_V = '5:19.03.15~3-0~ubuntu-focal' # Docker  
-ctrd_V = '1.3.9-1'    # Containerd 
+k8s_V = '1.22.1-00'            # Kubernetes 
+docker_V = '5:20.10.8~3-0~ubuntu-focal' # Docker  
+ctrd_V = '1.4.9-1'    # Containerd 
 ## /configuration variables ###
 
 Vagrant.configure("2") do |config|
@@ -56,7 +56,7 @@ Vagrant.configure("2") do |config|
         cfg.vm.synced_folder "../data", "/vagrant", disabled: true
         cfg.vm.provision "shell", path: "k8s_env_build.sh"
         cfg.vm.provision "shell", path: "k8s_pkg_cfg.sh", args: [ k8s_V, docker_V, ctrd_V ]
-        cfg.vm.provision "shell", path: "work_nodes.sh", args: cv[1]
+        cfg.vm.provision "shell", path: "work_nodes.sh", args: [ cv[1], "#{cv[2]}#{i}" ]
       end
     end
   end

@@ -19,6 +19,11 @@ networking:
   podSubnet: 172.16.0.0/16
 EOF
 
+# Fixed Internal-IP  
+cat <<EOF > /etc/default/kubelet
+KUBELET_EXTRA_ARGS=--node-ip=192.168.1.$1
+EOF
+
 # init kubernetes from --config due to clusterName
 kubeadm init --config=/tmp/kubeadm-config.yaml --upload-certs
 
