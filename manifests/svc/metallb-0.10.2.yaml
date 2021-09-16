@@ -2,6 +2,14 @@
 # - https://raw.githubusercontent.com/metallb/metallb/v0.10/manifests/metallb.yaml
 # clone from above to sysnet4admin 
 
+# namespace added manually
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: metallb-system
+  labels:
+    app: metallb
+---
 apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
