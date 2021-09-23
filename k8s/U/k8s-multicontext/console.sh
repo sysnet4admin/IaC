@@ -24,6 +24,8 @@ kubectl completion bash >/etc/bash_completion.d/kubectl
 
 # alias kubectl to k 
 echo 'alias k=kubectl' >> /home/vagrant/.bashrc
+echo 'alias ka=kubectl apply -f' >> /home/vagrant/.bashrc
+echo 'alias kd=kubectl delete -f' >> /home/vagrant/.bashrc
 echo 'complete -F __start_kubectl k' >> /home/vagrant/.bashrc
 
 # create .kube_config dir
