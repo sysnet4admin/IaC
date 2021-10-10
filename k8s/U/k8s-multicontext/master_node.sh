@@ -43,3 +43,9 @@ kubectl config rename-context kubernetes-admin@cluster-$2 $2
 
 # Change user name from original to each cluster 
 sed -i "s,kubernetes-admin,$2-admin,g" $HOME/.kube/config 
+
+# alias kubectl to k (for cks)
+echo 'alias k=kubectl' >> /home/vagrant/.bashrc
+echo "alias ka='kubectl apply -f'" >> ~/.bashrc
+echo "alias kd='kubectl delete -f'" >> ~/.bashrc
+echo 'complete -F __start_kubectl k' >> /home/vagrant/.bashrc
