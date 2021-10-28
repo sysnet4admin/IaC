@@ -45,7 +45,10 @@ kubectl config rename-context kubernetes-admin@cluster-$2 $2
 sed -i "s,kubernetes-admin,$2-admin,g" $HOME/.kube/config 
 
 # alias kubectl to k (for cks)
-echo 'alias k=kubectl' >> /home/vagrant/.bashrc
+echo 'alias k=kubectl' >> ~/.bashrc
 echo "alias ka='kubectl apply -f'" >> ~/.bashrc
 echo "alias kd='kubectl delete -f'" >> ~/.bashrc
-echo 'complete -F __start_kubectl k' >> /home/vagrant/.bashrc
+
+echo 'source <(kubectl completion bash)' >> ~/.bashrc
+kubectl completion bash >/etc/bash_completion.d/kubectl
+echo 'complete -F __start_kubectl k' >> ~/.bashrc
