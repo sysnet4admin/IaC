@@ -38,6 +38,10 @@ raw_git="raw.githubusercontent.com/sysnet4admin/IaC/master/manifests"
 # config for kubernetes's network 
 kubectl apply -f https://$raw_git/172.16_net_calico_v1.yaml
 
+# install etctctl 
+curl -L  https://github.com/sysnet4admin/BB/raw/main/etcdctl/v3.4.15/etcdctl -o /usr/local/bin/etcdctl
+chmod 744 /usr/local/bin/etcdctl 
+
 # Change context name from original to each cluster 
 kubectl config rename-context kubernetes-admin@cluster-$2 $2
 
