@@ -34,8 +34,8 @@ echo \
 modprobe br_netfilter
 
 # local small dns & vagrant cannot parse and delivery shell code.
-echo "192.168.1.$1 m-k8s" >> /etc/hosts
-for (( i=1; i<=$3; i++  )); do echo "192.168.1.$2$i w$i-k8s" >> /etc/hosts; done
+echo "192.168.1.$2 $1" >> /etc/hosts
+for (( i=1; i<=$4; i++  )); do echo "192.168.1.$3$i $1-w$i" >> /etc/hosts; done
 
 # config DNS  
 cat <<EOF > /etc/resolv.conf
