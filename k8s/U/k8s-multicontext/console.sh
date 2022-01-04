@@ -31,6 +31,12 @@ echo 'complete -F __start_kubectl k' >> /home/vagrant/.bashrc
 # create .kube_config dir
 sudo -u vagrant mkdir /home/vagrant/.kube
 
+# copy hosts file by sshpass
+sudo -u vagrant sshpass -p 'vagrant' scp -o StrictHostKeyChecking=no root@192.168.1.$2:/etc/hosts /tmp/$2-hosts
+sudo -u vagrant sshpass -p 'vagrant' scp -o StrictHostKeyChecking=no root@192.168.1.$3:/etc/hosts /tmp/$3-hosts
+sudo -u vagrant sshpass -p 'vagrant' scp -o StrictHostKeyChecking=no root@192.168.1.$4:/etc/hosts /tmp/$4-hosts
+cat /tmp/$2-hosts >> /etc/hosts; cat /tmp/$3-hosts >> /etc/hosts; cat /tmp/$4-hosts >> /etc/hosts
+
 # copy kubeconfig by sshpass
 sudo -u vagrant sshpass -p 'vagrant' scp -o StrictHostKeyChecking=no root@192.168.1.$2:/root/.kube/config $va_k8s_cfg-$2
 sudo -u vagrant sshpass -p 'vagrant' scp -o StrictHostKeyChecking=no root@192.168.1.$3:/root/.kube/config $va_k8s_cfg-$3
