@@ -36,8 +36,7 @@ echo "alias ka='kubectl apply -f'" >> ~/.bashrc
 echo 'complete -F __start_kubectl k' >> ~/.bashrc
 
 # git clone k8s-code
-git clone https://github.com/sysnet4admin/_Lecture_k8s_learning.kit.git
-mv /home/vagrant/_Lecture_k8s_learning.kit $HOME
+cd $HOME ; git clone https://github.com/sysnet4admin/_Lecture_k8s_learning.kit.git
 find $HOME/_Lecture_k8s_learning.kit -regex ".*\.\(sh\)" -exec chmod 700 {} \;
 
 # make rerepo-k8s-learning.kit and put permission
@@ -71,3 +70,13 @@ cd $HOME/_Lecture_k8s_learning.kit/ch9/9.7/metrics-server/ ; kubectl apply -k .
 # create dev1, dev2 namespaces
 kubectl create ns dev1
 kubectl create ns dev2
+
+# rook-ceph quickstart
+# https://rook.io/docs/rook/v1.8/quickstart.html
+cd $HOME ; git clone --single-branch --branch v1.8.3 https://github.com/rook/rook.git
+cd $HOME/rook/deploy/examples
+(sleep 1200 && kubectl creeate -f crds.yaml -f common.yaml -f operator.yaml)&
+(sleep 1500 && kubectl create -f cluster.yaml)&
+# https://rook.io/docs/rook/v1.8/ceph-toolbox.html
+(sleep 2100 && kubectl create -f toolbox.yaml)&
+
