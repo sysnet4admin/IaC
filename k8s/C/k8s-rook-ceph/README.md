@@ -12,6 +12,12 @@ Metrics Server  | 0.5.0   |
 Kustomize       | 4.2.0   |
 Helm            | 3.6.3   |
 
+### ⚠ 필수 실행
+rook-ceph cluster 구성을 위해서, 마스터 노드에 접속 후에 다음의 명령을 수행해야 합니다.
+```bash
+sh ~/rook-ceph-installer.sh 
+```
+
 #### 특이점 
 helm 자동 완성 기능을 사용하길 원한다면, 다음의 명령을 수행해야 합니다.  
 ```bash
