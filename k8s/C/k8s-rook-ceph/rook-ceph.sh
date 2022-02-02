@@ -16,7 +16,7 @@ echo "ceph-toolbox will be installed"
 sleep 6 kubectl create -f toolbox.yaml
 
 # Check properly on 
-while [ "kubectl get pod -n rook-ceph | wc -l" <= 12 ]; do
+while [ "kubectl get pod -n rook-ceph | wc -l" <= 33 ]; do
     echo "still in deploying cluster"
     sleep 30 
 done
