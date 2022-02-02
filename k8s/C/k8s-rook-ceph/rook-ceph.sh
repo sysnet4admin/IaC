@@ -8,10 +8,10 @@ cat <<EOF > $HOME/rook-ceph-installer.sh
 cd $HOME/rook/deploy/examples
 kubectl create -f crds.yaml -f common.yaml -f operator.yaml
 
-echo -e "\nclsuter will be installed"
+echo -e "\n>>clsuter will be installed"
 sleep 3 ; kubectl create -f cluster.yaml
 
-echo -e "\nceph-toolbox will be installed"
+echo -e "\n>>ceph-toolbox will be installed"
 # https://rook.io/docs/rook/v1.8/ceph-toolbox.html
 sleep 3 ; kubectl create -f toolbox.yaml
 
@@ -19,7 +19,7 @@ sleep 3 ; kubectl create -f toolbox.yaml
 TOTAL_RC=\$(kubectl get pod -n rook-ceph | tail -n +2 | wc -l)
 while [ \$TOTAL_RC -le 33 ]; do
     TOTAL_RC=\$(kubectl get pod -n rook-ceph | tail -n +2 | wc -l)
-    echo "still in deploying cluster \$TOTAL_RC/33"
+    echo ">>still in deploying cluster \$TOTAL_RC/33"
     sleep 30 
 done
    echo -e "\nSuccessfully deployed rook-ceph cluster \$TOTAL_RC/33"
