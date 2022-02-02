@@ -22,13 +22,13 @@ sh /tmp/helm_completion.sh
 ```
 [root@rc-m-k8s ~]# k top node 
 NAME        CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%   
-rc-m-k8s    142m         7%     1261Mi          66%       
-rc-s1-k8s   51m          5%     764Mi           66%       
-rc-s2-k8s   51m          5%     764Mi           66%       
-rc-s3-k8s   51m          5%     764Mi           66%       
-rc-w1-k8s   51m          5%     764Mi           54%       
-rc-w2-k8s   48m          4%     749Mi           53%       
-rc-w3-k8s   47m          4%     740Mi           53% 
+rc-m-k8s    166m         8%     1254Mi          66%       
+rc-s1-k8s   49m          4%     741Mi           53%       
+rc-s2-k8s   50m          5%     725Mi           52%       
+rc-s3-k8s   85m          8%     730Mi           52%       
+rc-w1-k8s   55m          5%     767Mi           55%       
+rc-w2-k8s   46m          4%     740Mi           53%       
+rc-w3-k8s   50m          5%     750Mi           53% 
 ```
 ```
 [root@rc-m-k8s ~]# k top node 
