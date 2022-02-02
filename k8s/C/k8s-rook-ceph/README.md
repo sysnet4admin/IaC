@@ -31,15 +31,15 @@ rc-w2-k8s   46m          4%     740Mi           53%
 rc-w3-k8s   50m          5%     750Mi           53% 
 ```
 ```
-[root@rc-m-k8s ~]# k top node 
+[root@rc-m-k8s ~]# k top node
 NAME        CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%   
-rc-m-k8s    166m         8%     1371Mi          72%       
-rc-s1-k8s   121m         12%    1152Mi          100%      
-rc-s2-k8s   121m         12%    1152Mi          100%      
-rc-s3-k8s   121m         12%    1152Mi          100%      
-rc-w1-k8s   121m         12%    1152Mi          82%       
-rc-w2-k8s   94m          9%     803Mi           57%       
-rc-w3-k8s   55m          5%     722Mi           51% 
+rc-m-k8s    202m         10%    1346Mi          70%       
+rc-s1-k8s   166m         16%    710Mi           50%       
+rc-s2-k8s   114m         11%    820Mi           58%       
+rc-s3-k8s   100m         10%    878Mi           62%       
+rc-w1-k8s   79m          7%     885Mi           63%       
+rc-w2-k8s   60m          6%     681Mi           48%       
+rc-w3-k8s   225m         22%    1084Mi          77% 
 ```
 
 #### 배포 후 rook-ceph 
