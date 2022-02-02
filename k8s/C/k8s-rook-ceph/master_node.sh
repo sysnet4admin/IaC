@@ -71,12 +71,3 @@ cd $HOME/_Lecture_k8s_learning.kit/ch9/9.7/metrics-server/ ; kubectl apply -k .
 kubectl create ns dev1
 kubectl create ns dev2
 
-# rook-ceph quickstart
-# https://rook.io/docs/rook/v1.8/quickstart.html
-cd $HOME ; git clone --single-branch --branch v1.8.3 https://github.com/rook/rook.git
-cd $HOME/rook/deploy/examples
-(sleep 1200 && kubectl creeate -f crds.yaml -f common.yaml -f operator.yaml)&
-(sleep 1500 && kubectl create -f cluster.yaml)&
-# https://rook.io/docs/rook/v1.8/ceph-toolbox.html
-(sleep 2100 && kubectl create -f toolbox.yaml)&
-
