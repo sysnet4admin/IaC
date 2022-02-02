@@ -17,6 +17,8 @@ rook-ceph cluster 구성을 위해서, 마스터 노드에 접속 후에 다음�
 ```bash
 sh ~/rook-ceph-installer.sh 
 ```
+---
+### 기타
 
 #### 특이점 
 helm 자동 완성 기능을 사용하길 원한다면, 다음의 명령을 수행해야 합니다.  
