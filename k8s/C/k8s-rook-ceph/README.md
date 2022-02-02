@@ -19,6 +19,7 @@ sh /tmp/helm_completion.sh
 ```
 
 #### 배포 전/후 기본 소모되는 CPU와 Memory  
+```
 [root@rc-m-k8s ~]# k top node 
 NAME        CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%   
 rc-m-k8s    142m         7%     1261Mi          66%       
@@ -28,7 +29,8 @@ rc-s3-k8s   51m          5%     764Mi           66%
 rc-w1-k8s   51m          5%     764Mi           54%       
 rc-w2-k8s   48m          4%     749Mi           53%       
 rc-w3-k8s   47m          4%     740Mi           53% 
-
+```
+```
 [root@rc-m-k8s ~]# k top node 
 NAME        CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%   
 rc-m-k8s    166m         8%     1371Mi          72%       
@@ -38,9 +40,10 @@ rc-s3-k8s   121m         12%    1152Mi          100%
 rc-w1-k8s   121m         12%    1152Mi          82%       
 rc-w2-k8s   94m          9%     803Mi           57%       
 rc-w3-k8s   55m          5%     722Mi           51% 
-
+```
 
 #### 배포 후 rook-ceph 
+```
 NAME                                                  READY   STATUS      RESTARTS   AGE
 csi-cephfsplugin-6ffvf                                3/3     Running     0          14m
 csi-cephfsplugin-jvsng                                3/3     Running     0          14m
