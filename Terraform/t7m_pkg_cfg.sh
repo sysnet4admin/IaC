@@ -5,8 +5,8 @@
 # or manually configure
 declare -a CSP=("aws" "azurerm" "google")
 
-# declare t7m default version (changeable) 
-declare -x TERRAFORM_DEFAULT="1.1.7"
+# declare t7m default version (from Vagrantfile)
+declare -x TERRAFORM_DEFAULT=$1
 
 # update package list 
 apt-get update 

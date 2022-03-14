@@ -17,7 +17,7 @@ Bringing machine 't7m-Console' up with 'virtualbox' provider...
 ==> t7m-Console: Matching MAC address for NAT networking...
 <snipped>
 ```
-끝나면, ~/t7m 아래에 다음과 같이 3사 CSP가 위치해 있습니다. 
+끝나면, ~/t7m 아래에 다음과 같이 3사 CSP가 위치해 있습니다. </br>
 그리고 각각 디렉터리 밑에 .envrc 예제가 들어 있습니다. 이를 적당히 수정해서 사용하면 됩니다.  
 ```bash 
 root@t7m-Console:~/t7m# ls -rlt
