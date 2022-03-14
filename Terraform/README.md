@@ -1,11 +1,13 @@
-테라폼을 3사에 사용하려고 만들었습니다. kubeflow도 해야 하고...매번 만들긴 귀찮고 해서... 
+# t7m(Terraform)-Console
+테라폼을 3사에 사용하려고 만들었습니다. </br>
+kubeflow도 해야 하고...매번 만들긴 귀찮고 해서... 
 주로 44bit의 블로그([Terraform](https://www.44bits.io/ko/post/terraform_introduction_infrastrucute_as_code), [direnv](https://www.44bits.io/ko/post/direnv_for_managing_directory_environment))를 참조 하였습니다. 
 - Terraform: `1.1.7`
-- tfenv: latest
-- direnv: latest
-- tfenv: latest
+- tfenv: **latest**
+- direnv: **latest**
+- tfenv: **latest**
 
-참고로 윈도우에서 tfenv를 하려면 [다음](https://dev.to/lkurzyniec/terraform-version-switcher-for-windows-42c4)을 참고하세요. 
+**참고**: 윈도우에서 tfenv를 하려면 [다음](https://dev.to/lkurzyniec/terraform-version-switcher-for-windows-42c4)을 참고하세요. 
 
 ## 사용법
 ```bash
