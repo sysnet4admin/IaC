@@ -5,7 +5,7 @@ kubeflow도 해야 하고...매번 만들긴 귀찮고 해서...
 - Terraform: `1.1.7`
 - tfenv: **latest**
 - direnv: **latest**
-- tfenv: **latest**
+- envrc: **latest**
 
 **참고**: 윈도우에서 tfenv를 하려면 [다음](https://dev.to/lkurzyniec/terraform-version-switcher-for-windows-42c4)을 참고하세요. 
 
