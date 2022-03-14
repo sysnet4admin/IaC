@@ -17,7 +17,7 @@ Bringing machine 't7m-Console' up with 'virtualbox' provider...
 ==> t7m-Console: Matching MAC address for NAT networking...
 <snipped>
 ```
-끝나면 다음과 같은 경로로(운영체제 마다 다름) 접속합니다. 
+끝나면 다음과 같은 경로로(운영체제 마다 문법이 다름) 접속합니다. 
 ```bash
 $ ssh 127.0.0.1 60071 
 ```
