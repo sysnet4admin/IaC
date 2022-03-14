@@ -1,0 +1,24 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+## configuration variables in t7m_pkg_cfg.sh ###
+CSP = ["aws", "azurerm", "google"]  # Cloud Service Provider
+t7m_V = '1.1.7'                     # Terraform Version   
+## /configuration variables in t7m_pkg_cfg.sh ##
+
+Vagrant.configure("2") do |config|
+  config.vm.define "t7m-Console" do |cfg|
+    cfg.vm.box = "sysnet4admin/Ubuntu-k8s"
+    cfg.vm.provider "virtualbox" do |vb|
+      vb.name = "t7m-Console"
+      vb.cpus = 2
+      vb.memory = 2048
+      vb.customize ["modifyvm", :id, "--groups", "/Terraform(github_SysNet4Admin)"]
+    end
+    cfg.vm.host_name = "t7m-Console"
+    cfg.vm.network "private_network", ip: "192.168.1.71"
+    cfg.vm.network "forwarded_port", guest: 22, host: 60071, auto_correct: true, id: "ssh"
+    cfg.vm.synced_folder "../data", "/vagrant", disabled: true 
+    cfg.vm.provision "shell", path: "t7m_pkg_cfg.sh"
+  end
+end
