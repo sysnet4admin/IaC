@@ -51,7 +51,14 @@ ln -s ~/.tfenv/bin/* /usr/local/bin
 tfenv install ${TERRAFORM_DEFAULT}
 tfenv use ${TERRAFORM_DEFAULT}
 
-# init terraform 
+## terraform command alias 
+{
+    echo 'alias tfp="terraform plan"'
+    echo 'alias tfa="terraform apply"'
+    echo 'alias tfd="terraform destroy"'
+} >> ~/.bashrc
+
+## init terraform 
 for i in "${!CSP[@]}"; do
   echo "provider ${CSP[i]} { }" > ~/t7m/"${CSP[i]}"/init.tf 
   cd ~/t7m/"${CSP[i]}" ; terraform init 
