@@ -1,0 +1,49 @@
+# Source from: https://gist.github.com/sublimino/8ae39b9b6ae706438c4b8f2061a0a609
+
+g-whoami () { 
+  gcloud auth list --filter=status:ACTIVE --format="value(account)"
+}
+g-get-user () { 
+  gcloud config get-value account
+}
+g-get-project () { 
+  gcloud config get-value project
+}
+g-get-project-id () { 
+  gcloud projects describe "$(gcloud-get-project)" --format="value(projectNumber)"
+}
+g-get-region () { 
+  gcloud config get-value compute/region
+}
+g-get-zone () { 
+  gcloud config get-value compute/zone
+}
+g-config () { 
+  gcloud config list "${@}"
+}
+g-get-org-policies () { 
+  gcloud alpha resource-manager org-policies list --project $(gcloud-get-project)
+}
+g-gclb-backend-status () { 
+  for SERVICE in $(gcloud compute backend-services list | awk '$3 == "HTTP" { print $1}');
+  do
+    echo "${SERVICE}";
+    PORT=$(echo "${SERVICE}" | sed -E 's/k8s-be-(.*)--[^-]*$/\1/g');
+    kservice "${PORT}" | grep --color=auto ":${PORT}/" --color=none;
+    gcloud compute backend-services get-health "${SERVICE}" --global | grep --color=auto --color=auto -E '^  - healthState:' | h '\bUNHEALTHY\b' '\bHEALTHY\b';
+    printf '\n';
+  done
+}
+g-quota-check () {
+  for REGION in ${1:-$(gcloud compute regions list --format="value(name)")};
+  do
+     echo $REGION;
+     gcloud compute regions describe "${REGION}" --format json | jq '.quotas[] | select(.limit > 0) | select(.usage >= (.limit * 0.7)) | .';
+  done
+}
+g-sa () {
+  gcloud alpha iam service-accounts "${@:-}"
+}
+g-sa-list () {
+  gcloud-sa list ${@:-}
+}
