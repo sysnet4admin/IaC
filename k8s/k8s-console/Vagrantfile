@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 # each of components to install 
-k8s_V = '1.26.0'           # Kubernetes
+k8s_V = '1.26.0-00'           # Kubernetes
 ## /configuration variables ###
 
 Vagrant.configure("2") do |config|
