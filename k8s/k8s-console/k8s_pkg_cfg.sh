@@ -53,6 +53,6 @@ cat <<EOF >>  ~/.bashrc
 
 #kube-ps1 
 source /opt/kube-ps1/kube-ps1.sh
-PS1='[\u@\h \W $(kube_ps1)]\$ '
+PS1='[\u@\h \W \$(kube_ps1)]\$ '
 EOF
 
