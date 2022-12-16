@@ -39,3 +39,18 @@ helm completion bash > /etc/bash_completion.d/helm
 echo 'alias h=helm' >> ~/.bashrc
 echo 'complete -F __start_helm h' >> ~/.bashrc 
 
+# plugin 
+## fzf
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+~/.fzf/install
+## kubectx
+git clone https://github.com/ahmetb/kubectx /opt/kubectx
+ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx
+ln -s /opt/kubectx/kubens /usr/local/bin/kubens
+## kube-ps1
+git clone https://github.com/jonmosco/kube-ps1.git /opt/kube-ps1
+echo '' >> ~/.bashrc
+echo '#kube-ps1' >> ~/.bashrc
+echo 'source /opt/kube-ps1/kube-ps1.sh' >> ~/.bashrc
+echo 'PS1='[\u@\h \W $(kube_ps1)]\$ '' >> ~/.bashrc
+
