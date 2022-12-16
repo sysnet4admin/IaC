@@ -4,6 +4,11 @@
 - kubectl 1.26.0 
 - helm 3.10.3 
 
+## 설치된 플러그인
+kubectx
+kubens 
+kube-ps1
+
 ## 정보 
 - autocompletion 완료 
 - alias는 kubectl은 k로 helm은 h로 완료  
