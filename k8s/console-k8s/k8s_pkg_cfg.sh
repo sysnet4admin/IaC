@@ -4,17 +4,16 @@
 apt-get install sshpass
 
 # add kubernetes repo
-apt-get update && apt-get install apt-transport-https curl
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-cat <<EOF | tee /etc/apt/sources.list.d/kubernetes.list
-deb https://apt.kubernetes.io/ kubernetes-xenial main
-EOF
+apt-get update && apt-get install -y apt-transport-https ca-certificates curl
+curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" \
+  | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 # update repo info 
 apt-get update 
-
-# install kubectl
-apt-get install kubectl=$1 
+# install kubectl and fixed ver
+apt-get install -y kubectl=$1 
+apt-mark hold kubelet
 
 # kubectl completion on bash-completion dir due to completion already installed 
 kubectl completion bash >/etc/bash_completion.d/kubectl
