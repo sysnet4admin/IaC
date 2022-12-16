@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Ubuntu ONLY to aviod useless message 
+# body: dpkg-preconfigure: unable to re-open stdin
+export DEBIAN_FRONTEND=noninteractive
+
 # install util packages 
 apt-get install sshpass
 
