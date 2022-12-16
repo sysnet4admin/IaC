@@ -49,8 +49,10 @@ ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx
 ln -s /opt/kubectx/kubens /usr/local/bin/kubens
 ## kube-ps1
 git clone https://github.com/jonmosco/kube-ps1.git /opt/kube-ps1
-echo '' >> ~/.bashrc
-echo '#kube-ps1' >> ~/.bashrc
-echo 'source /opt/kube-ps1/kube-ps1.sh' >> ~/.bashrc
-echo 'PS1='[\u@\h \W $(kube_ps1)]\$ '' >> ~/.bashrc
+cat <<EOF >>  ~/.bashrc 
+
+#kube-ps1 
+source /opt/kube-ps1/kube-ps1.sh
+PS1='[\u@\h \W $(kube_ps1)]\$ '
+EOF
 
