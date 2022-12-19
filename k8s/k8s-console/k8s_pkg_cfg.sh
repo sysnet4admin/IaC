@@ -70,3 +70,6 @@ source /opt/kube-ps1/kube-ps1.sh
 PS1='[\u@\h \W \$(kube_ps1)]\$ '
 EOF
 
+# Exceptional config to recall bashrc(i.e. kube-ps1 and other)
+echo 'source ~/.bashrc' >> ~/.bash_profile 
+
