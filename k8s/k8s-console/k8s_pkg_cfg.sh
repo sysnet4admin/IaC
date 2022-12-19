@@ -19,6 +19,10 @@ apt-get update
 apt-get install -y kubectl=$1 
 apt-mark hold kubelet
 
+# install & enable docker 
+apt-get install -y docker-ce=$2 docker-ce-cli=$2 
+systemctl enable --now docker
+
 # kubectl completion on bash-completion dir due to completion already installed 
 kubectl completion bash >/etc/bash_completion.d/kubectl
 
@@ -55,4 +59,6 @@ cat <<EOF >>  ~/.bashrc
 source /opt/kube-ps1/kube-ps1.sh
 PS1='[\u@\h \W \$(kube_ps1)]\$ '
 EOF
+
+
 
