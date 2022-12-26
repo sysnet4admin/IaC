@@ -9,9 +9,19 @@ apt-get install sshpass
 
 # add kubernetes repo
 apt-get update && apt-get install -y apt-transport-https ca-certificates curl
+
 curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
 echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" \
   | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+# add docker-ce repo 
+apt-get install -y gnupg lsb-release
+
+mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 # update repo info 
 apt-get update 
@@ -60,5 +70,6 @@ source /opt/kube-ps1/kube-ps1.sh
 PS1='[\u@\h \W \$(kube_ps1)]\$ '
 EOF
 
-
+# Exceptional config to recall bashrc(i.e. kube-ps1 and other)
+echo 'source ~/.bashrc' >> ~/.bash_profile 
 
