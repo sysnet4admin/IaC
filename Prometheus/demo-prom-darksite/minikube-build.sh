@@ -61,4 +61,4 @@ install minikube-linux-amd64 /usr/local/bin/minikube
 apt-get install -y conntrack # network 
 
 # startup minikube
-/usr/local/bin/minikube start --driver=none
+/usr/local/bin/minikube start --driver=none --memory=1975mb
