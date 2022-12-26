@@ -52,15 +52,50 @@ tfenv install ${TERRAFORM_DEFAULT}
 tfenv use ${TERRAFORM_DEFAULT}
 
 ## terraform command alias 
+## https://github.com/zer0beat/terraform-aliases/blob/master/.terraform_aliases
 {
-    echo 'alias t="terraform"'
-    echo 'alias tp="terraform plan"'
-    echo 'alias ta="terraform apply"'
-    echo 'alias td="terraform destroy"'
+    echo ''
+    echo '#terraform command alias'
+    echo 'alias tf="terraform"'
+    echo 'alias tfa="terraform apply"'
+    echo 'alias tfc="terraform console"'
+    echo 'alias tfd="terraform destroy"'
+    echo 'alias tff="terraform fmt"'
+    echo 'alias tfg="terraform graph"'
+    echo 'alias tfim="terraform import"'
+    echo 'alias tfin="terraform init"'
+    echo 'alias tfo="terraform output"'
+    echo 'alias tfp="terraform plan"'
+    echo 'alias tfpr="terraform providers"'
+    echo 'alias tfr="terraform refresh"'
+    echo 'alias tfsh="terraform show"'
+    echo 'alias tft="terraform taint"'
+    echo 'alias tfut="terraform untaint"'
+    echo 'alias tfv="terraform validate"'
+    echo 'alias tfw="terraform workspace"'
+    echo 'alias tfs="terraform state"'
+    echo 'alias tffu="terraform force-unlock"'
+    echo 'alias tfwst="terraform workspace select"'
+    echo 'alias tfwsw="terraform workspace show"'
+    echo 'alias tfssw="terraform state show"'
+    echo 'alias tfwde="terraform workspace delete"'
+    echo 'alias tfwls="terraform workspace list"'
+    echo 'alias tfsls="terraform state list"'
+    echo 'alias tfwnw="terraform workspace new"'
+    echo 'alias tfsmv="terraform state mv"'
+    echo 'alias tfspl="terraform state pull"'
+    echo 'alias tfsph="terraform state push"'
+    echo 'alias tfsrm="terraform state rm"'
+    echo 'alias tfay="terraform apply -auto-approve"'
+    echo 'alias tfdy="terraform destroy -auto-approve"'
+    echo 'alias tfinu="terraform init -upgrade"'
+    echo 'alias tfpde="terraform plan --destroy"'  
 } >> ~/.bashrc
 
 ## terraform autocompletion 
 terraform -install-autocomplete
+# Exceptional config to recall bashrc(i.e. terraform autocomplete and other)
+echo 'source ~/.bashrc' >> ~/.bash_profile 
 
 ## init terraform 
 for i in "${!CSP[@]}"; do
