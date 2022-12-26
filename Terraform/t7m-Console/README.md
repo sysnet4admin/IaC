@@ -2,7 +2,7 @@
 테라폼을 3사에 사용하려고 만들었습니다. </br>
 kubeflow도 해야 하고...매번 만들긴 귀찮고 해서... 
 주로 44bit의 블로그([Terraform](https://www.44bits.io/ko/post/terraform_introduction_infrastrucute_as_code), [direnv](https://www.44bits.io/ko/post/direnv_for_managing_directory_environment))를 참조 하였습니다. 
-- Terraform: `1.1.7`
+- Terraform: `1.3.6`
 - tfenv: **latest**
 - direnv: **latest**
 - envrc: **latest**
@@ -19,7 +19,7 @@ Bringing machine 't7m-Console' up with 'virtualbox' provider...
 ```
 끝나면 다음과 같은 경로로(운영체제 마다 문법이 다름) 접속합니다. 
 ```bash
-$ ssh 127.0.0.1 60071 
+$ ssh 127.0.0.1 60247
 ```
 
 접속 후에 **~/t7m** 아래에 다음과 같이 3사 CSP가 위치해 있습니다. </br>
