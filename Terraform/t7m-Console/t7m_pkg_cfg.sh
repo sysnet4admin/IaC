@@ -53,10 +53,14 @@ tfenv use ${TERRAFORM_DEFAULT}
 
 ## terraform command alias 
 {
-    echo 'alias tfp="terraform plan"'
-    echo 'alias tfa="terraform apply"'
-    echo 'alias tfd="terraform destroy"'
+    echo 'alias t="terraform"'
+    echo 'alias tp="terraform plan"'
+    echo 'alias ta="terraform apply"'
+    echo 'alias td="terraform destroy"'
 } >> ~/.bashrc
+
+## terraform autocompletion 
+terraform -install-autocomplete
 
 ## init terraform 
 for i in "${!CSP[@]}"; do
