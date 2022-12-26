@@ -1,22 +1,39 @@
 #!/usr/bin/env bash
 
-# kubernetes repo
-gg_pkg="packages.cloud.google.com/yum/doc" # Due to shorten addr for key
-cat <<EOF > /etc/yum.repos.d/kubernetes.repo
-[kubernetes]
-name=Kubernetes
-baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
-enabled=1
-gpgcheck=0
-repo_gpgcheck=0
-gpgkey=https://${gg_pkg}/yum-key.gpg https://${gg_pkg}/rpm-package-key.gpg
-EOF
+# Ubuntu ONLY to aviod useless message
+# body: dpkg-preconfigure: unable to re-open stdin
+export DEBIAN_FRONTEND=noninteractive
 
-# install kubectl only 
-yum install kubectl-$1 -y 
+# add kubernetes repo
+apt-get update && apt-get install apt-transport-https ca-certificates curl
+curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg \
+            https://packages.cloud.google.com/apt/doc/apt-key.gpg
+echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] \
+      https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
-# install bash-completion for kubectl 
-yum install bash-completion -y 
+
+# add docker-ce repo
+apt-get install -y \
+        ca-certificates \
+        gnupg \
+        lsb-release
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# update package list 
+apt-get update 
+
+# install & enable docker 
+apt-get install -y docker-ce=$2 docker-ce-cli=$2 
+systemctl enable --now docker
+
+# install kubernetes
+# both kubelet and kubectl will install by dependency
+# but aim to latest version. so fixed version by manually
+apt-get install -y kubectl=$1
 
 # kubectl completion on bash-completion dir
 kubectl completion bash >/etc/bash_completion.d/kubectl
@@ -37,11 +54,11 @@ echo 'alias h=helm' >> ~/.bashrc
 echo 'complete -F __start_helm h' >> ~/.bashrc
 
 # install minikube binaries
-curl -LO https://storage.googleapis.com/minikube/releases/v1.23.2/minikube-linux-amd64
+curl -LO https://storage.googleapis.com/minikube/releases/$3/minikube-linux-amd64
 install minikube-linux-amd64 /usr/local/bin/minikube
 
 # install packages for minikube 
-yum -y install conntrack # network 
+apt-get install -y conntrack # network 
 
 # startup minikube
 /usr/local/bin/minikube start --driver=none
