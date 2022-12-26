@@ -21,7 +21,7 @@ Bringing machine 'demo-prom-darksite' up with 'virtualbox' provider...
     demo-prom-darksite: service/prometheus-server-np patched
 ```
 진행이 모두 완료된 이후에 
-192.168.1.248:30000 으로 접속하면 프로메테우스 그래프 대시보드가 나옴 
+192.168.1.231:30000 으로 접속하면 프로메테우스 그래프 대시보드가 나옴 
 
 ## 주의할 점 
 dockershim을 이용하기 때문에 쿠버네티스 버전 1.24로 넘어가야 할 경우에는 
