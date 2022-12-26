@@ -3,7 +3,7 @@
 
 ## configuration variables ###
 CSP = ["aws", "azurerm", "google"]  # READ_ONLY - Cloud Service Provider
-t7m_V = '1.1.7'                     # Configurable - Terraform Version   
+t7m_V = '1.3.6'                     # Configurable - Terraform Version   
 ## /configuration variables ##
 
 Vagrant.configure("2") do |config|
@@ -16,8 +16,8 @@ Vagrant.configure("2") do |config|
       vb.customize ["modifyvm", :id, "--groups", "/k8s-dev-tools(github_SysNet4Admin)"]
     end
     cfg.vm.host_name = "t7m-Console"
-    cfg.vm.network "private_network", ip: "192.168.1.91"
-    cfg.vm.network "forwarded_port", guest: 22, host: 60091, auto_correct: true, id: "ssh"
+    cfg.vm.network "private_network", ip: "192.168.1.247"
+    cfg.vm.network "forwarded_port", guest: 22, host: 60247, auto_correct: true, id: "ssh"
     cfg.vm.synced_folder "../data", "/vagrant", disabled: true 
     cfg.vm.provision "shell", path: "t7m_pkg_cfg.sh", args: t7m_V
   end
