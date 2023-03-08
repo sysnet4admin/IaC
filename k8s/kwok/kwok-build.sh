@@ -2,11 +2,13 @@
 
 # prerequirement # 
 ## installation 
-sudo apt-get install -y \
-  jq \
-  git \
-  golang \
-  lsb_release
+apt-get install -y \
+        ca-certificates \
+        gnupg \
+        lsb-release \
+        jq \
+        git \
+        golang 
 
 # git clone the source 
 # https://github.com/sysnet4admin/_Lecture_k8s_starter.kit.git
