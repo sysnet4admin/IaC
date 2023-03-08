@@ -37,8 +37,8 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.
 apt-get update 
 
 # install & enable docker 
-# apt-get install -y docker-ce=$2 docker-ce-cli=$2 
-# systemctl enable --now docker
+apt-get install -y docker-ce=$2 docker-ce-cli=$2 
+systemctl enable --now docker
 
 # install kubectl 
 curl -LO https://dl.k8s.io/release/v1.26.0/bin/linux/amd64/kubectl
