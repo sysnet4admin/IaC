@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: gitops-chk-info 
+  name: gitops-chk-info 
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: gitops-chk-info 
+  template:
+    metadata:
+      labels:
+        app: gitops-chk-info 
+    spec:
+      containers:
+      - image: sysnet4admin/chk-info 
+        name: gitops-chk-info 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lb-gitops-chk-info 
+spec:
+  selector:
+    app: gitops-chk-info 
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
