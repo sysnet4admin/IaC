@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gitops
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sysnet4admin/IaC.git
+    targetRevision: HEAD
+    path: GitOps
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      selfHeal: true
+
