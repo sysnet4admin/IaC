@@ -5,7 +5,7 @@ metadata:
     app: gitops-chk-info 
   name: gitops-chk-info 
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: gitops-chk-info 
