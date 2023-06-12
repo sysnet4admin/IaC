@@ -1,5 +1,5 @@
 # Origin Source
-# https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.6.1/components.yaml
+# https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.6.3/components.yaml
 
 apiVersion: v1
 kind: ServiceAccount
@@ -140,9 +140,7 @@ spec:
         - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
         - --kubelet-use-node-status-port
         - --metric-resolution=15s
-        # add insecure tls 
-        - --kubelet-insecure-tls
-        image: k8s.gcr.io/metrics-server/metrics-server:v0.6.1
+        image: registry.k8s.io/metrics-server/metrics-server:v0.6.3
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 3
