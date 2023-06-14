@@ -139,7 +139,7 @@ spec:
         - --secure-port=4443
         # Manually Add for lab env(Sysnet4admin/k8s)
         # skip tls internal usage purpose
-          - --kubelet-insecure-tls
+        - --kubelet-insecure-tls
         # kubelet could use internalIP communication   
         - --kubelet-preferred-address-types=InternalIP
         - --kubelet-use-node-status-port
