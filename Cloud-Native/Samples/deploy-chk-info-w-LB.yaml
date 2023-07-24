@@ -1,30 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deploy-nginx
+  name: deploy-chk-info
   labels:
-    app: deploy-nginx
+    app: deploy-chk-info
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: deploy-nginx
+      app: deploy-chk-info
   template:
     metadata:
       labels:
-        app: deploy-nginx 
+        app: deploy-chk-info 
     spec:
       containers:
-      - name: nginx
-        image: nginx
+      - name: chk-info
+        image: sysnet4admin/chk-info
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: lb-nginx 
+  name: lb-chk-info 
 spec:
   selector:
-    app: deploy-nginx  
+    app: deploy-chk-info  
   ports:
     - name: http
       port: 80
