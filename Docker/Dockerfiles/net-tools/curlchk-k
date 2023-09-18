@@ -1,9 +1,0 @@
-#!/bin/bash
-HTTP_CODE=$(curl -s -o -k /dev/null -w "%{http_code}" $1)
-
-if [ "$HTTP_CODE" = "200" ]; then
-  echo "`date`  Okay [$1] is working properly" >> /var/log/curl.log
-else
-  echo "`date`  NOOO [$1] is not working on" >> /var/log/curl.log
-fi
-
