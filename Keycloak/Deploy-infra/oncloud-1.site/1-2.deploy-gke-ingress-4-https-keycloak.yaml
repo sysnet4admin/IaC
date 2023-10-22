@@ -4,7 +4,7 @@ metadata:
   name: keycloak-ingress
   annotations:
     spec.ingressClassName: "gce"
-    kubernetes.io/ingress.global-static-ip-name: "keycloak"
+    kubernetes.io/ingress.global-static-ip-name: "hj-keycloak-oncloud-1-static-ip"
     networking.gke.io/managed-certificates: "keycloak-managed-cert"
     networking.gke.io/v1beta1.FrontendConfig: "keycloak-config"
 spec:
@@ -30,4 +30,4 @@ metadata:
   name: keycloak-managed-cert
 spec:
   domains:
-    - "oncloud-2.site"
+    - "oncloud-1.site"
