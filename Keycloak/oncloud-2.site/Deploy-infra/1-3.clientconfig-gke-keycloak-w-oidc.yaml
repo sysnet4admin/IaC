@@ -7,19 +7,19 @@ spec:
   authentication:
   - name: oidc
     oidc:
-      # should change clientSecret after applying keycloak
-      clientSecret: uBYt2GEaoEsnXgSgQaqlkkUY4YMANSc8
+      # should change clientSecret after deploying keycloak
+      clientSecret: iCkW0BdGPj0u08hJtjFX9vGiJTemePl7
       clientID: k8s-auth 
       cloudConsoleRedirectURI: https://console.cloud.google.com/kubernetes/oidc
       extraParams: resource=token-groups-claim
       groupPrefix: '-'
       groupsClaim: groups
-      issuerURI: https://oncloud-1.site/realms/kubernetes
+      issuerURI: https://oncloud-2.site/realms/kubernetes
       kubectlRedirectURI: http://localhost:8000
       scopes: openid
       userClaim: preferred_username
       userPrefix: '-'
   internalServer: ""
-  name: hj-keycloak-oncloud-1-gke
+  name: hj-keycloak-oncloud-2-gke
   # server: manually input after applying clientconfig or searching and add 
 status: {}
