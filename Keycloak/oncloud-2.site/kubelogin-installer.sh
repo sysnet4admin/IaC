@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # declare variable.
-DOMAIN_NAME=oncloud-1
-CLIENT_SECRET=uBYt2GEaoEsnXgSgQaqlkkUY4YMANSc8
+DOMAIN_NAME=oncloud-2
+CLIENT_SECRET=iCkW0BdGPj0u08hJtjFX9vGiJTemePl7
 
 #  keycloak-login-config 
 rm -rf ~/.keycloak ; mkdir ~/.keycloak

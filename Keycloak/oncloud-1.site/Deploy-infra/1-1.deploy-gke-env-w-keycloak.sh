@@ -39,7 +39,7 @@ echo "---"
 # Deploy keycloak 
 # notice: helm version should be 3.8.0 at least 
 echo "Deploy keycloak to GKE"
-echo "wait 5 sec for stable GKE" ; sleep 5 
+echo "wait 10 sec for stable GKE" ; sleep 10
 helm install keycloak oci://registry-1.docker.io/bitnamicharts/keycloak \
 --set auth.adminUser=admin \
 --set auth.adminPassword=admin \
