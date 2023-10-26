@@ -24,6 +24,8 @@ gcloud container clusters create $KUBE_CLUSTER \
 --zone=${GCP_ZONE} \
 --no-enable-autorepair \
 --no-enable-autoupgrade \
+--no-enable-ip-alias \
+--location-policy=BALANCED \
 --enable-identity-service \
 --cluster-version="${CLUSTER_VERSION}" \
 --release-channel=None \
@@ -39,10 +41,10 @@ echo "---"
 # Deploy keycloak 
 # notice: helm version should be 3.8.0 at least 
 echo "Deploy keycloak to GKE"
-echo "wait 5 sec for stable GKE" ; sleep 5 
+echo "wait 60 seconds for stable GKE" ; sleep 60 
 helm install keycloak oci://registry-1.docker.io/bitnamicharts/keycloak \
 --set auth.adminUser=admin \
 --set auth.adminPassword=admin \
 --set production=true \
 --set proxy=edge
-echo "---"
+
