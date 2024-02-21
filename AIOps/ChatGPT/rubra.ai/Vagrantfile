@@ -20,6 +20,7 @@ Vagrant.configure("2") do |config|
     cfg.vm.synced_folder "../data", "/vagrant", disabled: true 
     cfg.vm.provision "shell", path: "docker_build.sh", args: docker_V 
     cfg.vm.provision "shell", path: "custom-git.sh" # custom-by-user whatever you want 
-    cfg.vm.provision "shell", path: "run-rubra.ai.sh" 
+    cfg.vm.provision "file", source: "run_rubra.ai.sh", destination: "run_rubra.ai.sh"
+#    cfg.vm.provision "shell", path: "run-rubra.ai.sh" 
   end
 end
