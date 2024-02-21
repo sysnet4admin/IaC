@@ -10,8 +10,8 @@ Vagrant.configure("2") do |config|
     cfg.vm.box = "sysnet4admin/Ubuntu-k8s"
     cfg.vm.provider "virtualbox" do |vb|
       vb.name = "rubra-ai"
-      vb.cpus = 4
-      vb.memory = 16384
+      vb.cpus = 8
+      vb.memory = 32768
       vb.customize ["modifyvm", :id, "--groups", "/AIOps(github_SysNet4Admin)"]
     end
     cfg.vm.host_name = "rubra-ai"
