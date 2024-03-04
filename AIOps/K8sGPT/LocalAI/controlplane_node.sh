@@ -40,5 +40,5 @@ chmod 700 /usr/local/bin/rerepo-k8s-learning.kit
 curl -LO https://github.com/k8sgpt-ai/k8sgpt/releases/download/v0.3.27/k8sgpt_amd64.deb
 dpkg -i k8sgpt_amd64.deb
 
-apt-get install docker-ce -y 
+apt-get install docker-ce docker-ce-cli -y 
 
