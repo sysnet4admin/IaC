@@ -3,6 +3,10 @@
 # install packages
 apt-get install python3-pip -y 
 
+# alias 
+echo 'alias python=python3' >> ~/.bashrc
+# echo "alias ka='kubectl apply -f'" >> ~/.bashrc
+
 # init for hugging face 
 pip install huggingface_hub
 apt-get install git-lfs -y 
