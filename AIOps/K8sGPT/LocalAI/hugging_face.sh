@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# install packages
+apt-get install python3-pip -y 
+
 # init for hugging face 
 pip install huggingface_hub
 apt-get install git-lfs -y 
