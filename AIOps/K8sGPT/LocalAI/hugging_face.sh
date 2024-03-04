@@ -7,6 +7,9 @@ apt-get install python3-pip -y
 pip install huggingface_hub
 apt-get install git-lfs -y 
 
+# for huggingface-cli login
+git config --global credential.helper store
+
 # ssh key gen 
 ssh-keygen -t ed25519 -C "pagaia@hotmail.com"
 
