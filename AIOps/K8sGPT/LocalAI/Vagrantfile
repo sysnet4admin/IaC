@@ -22,7 +22,7 @@ Vagrant.configure("2") do |config|
       cfg.vm.provider "virtualbox" do |vb|
         vb.name = "cp-k8s-#{k8s_V[0..5]}(github_SysNet4Admin)"
         vb.cpus = 8
-        vb.memory = 32678
+        vb.memory = 24576
         vb.customize ["modifyvm", :id, "--groups", "/AIOps-K8sGPT-LocalAI(github_SysNet4Admin)"]
       end
       cfg.vm.host_name = "cp-k8s"
@@ -46,7 +46,7 @@ Vagrant.configure("2") do |config|
       cfg.vm.provider "virtualbox" do |vb|
         vb.name = "w#{i}-k8s-#{k8s_V[0..5]}(github_SysNet4Admin)"
         vb.cpus = 1
-        vb.memory = 2048
+        vb.memory = 1024
         vb.customize ["modifyvm", :id, "--groups", "/AIOps-K8sGPT-LocalAI(github_SysNet4Admin)"]
       end
       cfg.vm.host_name = "w#{i}-k8s"
