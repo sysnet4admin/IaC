@@ -35,10 +35,8 @@ pip install -r extensions/openai/requirements.txt
 # load text-generation-webui
 $HOME/text-generation-webui/start_linux.sh \
   --listen --listen-host 0.0.0.0 --listen-port=7861 \
-  --extenstions openai --model TinyLlama_TinyLlama-1.1B-Chat-v1.0 \
-  --api-port 5001 <<EOF & 
-N
-EOF 
+  --extensions openai --model TinyLlama_TinyLlama-1.1B-Chat-v1.0 \
+  --api-port 5001 --cpu&
 echo "Web: 0.0.0.0:7861, API: 0.0.0.0:5001"
 
 # N = NO GPU
