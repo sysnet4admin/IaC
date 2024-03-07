@@ -33,11 +33,11 @@ python3 download-model.py TinyLlama/TinyLlama-1.1B-Chat-v1.0
 pip install -r extensions/openai/requirements.txt
 
 # load text-generation-webui
-$HOME/text-generation-webui/start_linux.sh \
-  --listen --listen-host 0.0.0.0 --listen-port=7861 \
-  --extensions openai --model TinyLlama_TinyLlama-1.1B-Chat-v1.0 \
-  --api-port 5001 <<<"N" &
-echo "Web: 0.0.0.0:7861, API: 0.0.0.0:5001"
+# $HOME/text-generation-webui/start_linux.sh \
+#   --listen --listen-host 0.0.0.0 --listen-port=7861 \
+#   --extensions openai --model TinyLlama_TinyLlama-1.1B-Chat-v1.0 \
+#   --api-port 5001 <<<"N" &
+# echo "Web: 0.0.0.0:7861, API: 0.0.0.0:5001"
 
 # N = NO GPU
 
@@ -64,3 +64,6 @@ chmod 700 /usr/local/bin/test_tgw
 
 # check command 
 # curl http://localhost:5001/v1/models|jq '.data[].id'
+
+#python3 server.py --listen-host 0.0.0.0 --listen \
+#  --model google_gemma-2b  --extensions  openai --cpu --loader transformers
