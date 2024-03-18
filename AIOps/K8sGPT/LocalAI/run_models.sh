@@ -82,6 +82,6 @@ ollama pull phi
 ollama run gemma:2b 
 
 # auth add (default: gemma:2b)
-k8sgpt auth add -b localai -u http://localhost:11434/v1 --model gemma:7b 
+k8sgpt auth add -b localai -u http://localhost:11434/v1 --model gemma:2b 
 
 
