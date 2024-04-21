@@ -2,9 +2,9 @@
   "name": "ubuntu-22.04",
   "version": "202404.21.0",
   "arch": "aarch64",
-  "build_timestamp": "20240421090806",
+  "build_timestamp": "20240421112835",
   "packer_command": "packer build -timestamp-ui -force -var cpus=4 -only=vmware-iso.vm -var-file=ubuntu-22.04-aarch64.pkrvars.hcl ../../packer_templates",
-  "git_revision": "c2d4eeef887b73441fb6dbd74632f845dec7678e",
+  "git_revision": "1ef76b1a580f3f11db66ba65cfcf86b051f07962",
   "git_status": "dirty",
   "box_basename": "ubuntu-22.04",
   "template": "ubuntu-22.04-aarch64",
@@ -15,9 +15,9 @@
       "version": "13.5.1",
       "file": "ubuntu-22.04-aarch64.vmware.box",
       "checksum_type": "sha256",
-      "checksum": "0645b76a5a87e993d68ef53161dcb6c2f3e2015db3b58b2ba4f73f7d6993c61b",
-      "size": "748 MB",
-      "build_time": 572,
+      "checksum": "06e43be10e4e6d4e2baed8c317fed9a4ebd64f85426f9b2faaa01bdc0bdf821e",
+      "size": "772 MB",
+      "build_time": 558,
       "build_cpus": "4"
     }
   ]
