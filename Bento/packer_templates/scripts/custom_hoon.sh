@@ -1,7 +1,7 @@
 #!/bin/sh -eux
 
 # add google dns server to avoid dns query error 
-cat <<EOF >/etc/resolv.conf;
+cat <<EOF >/etc/resolv.conf
 nameserver 8.8.8.8
 EOF
 
@@ -20,11 +20,7 @@ wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_arm64 -O 
 
 
 # vimrc last cursor 
-cat <<EOF >/root/.vimrc
-if has("autocmd")
-  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-endif
-EOF 
+# TBD
 
 # disable Automatic Updates on Ubuntu
 cat <<EOF >/etc/apt/apt.conf.d/20auto-upgrades
@@ -35,7 +31,7 @@ APT::Periodic::Update-Package-Lists "0";
 EOF
 
 # disable IPV6 on Ubuntu (adding to sysctl)
-cat <<EOF >>/etc/sysctl.conf
+cat <<EOF >/etc/sysctl.d/99-local-network.conf
 net.ipv6.conf.all.disable_ipv6 = 1
 net.ipv6.conf.default.disable_ipv6 = 1
 EOF
