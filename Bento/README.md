@@ -14,3 +14,5 @@ bento build --cpus 4 --only=vmware-iso.vm os_pkrvars/ubuntu/ubuntu-22.04-aarch64
 # Modified 
 - ubuntu-22.04-aarch64.pkrvars.hcl
 + custom_hoon.sh
+  - custom_pre_hoon.sh 
+  - custom_post_hoon.sh 
