@@ -84,7 +84,7 @@ locals {
             ] : (
             var.os_name == "ubuntu" ||
             var.os_name == "debian" ? [
-              "${path.root}/scripts/custom_hoon.sh",
+              "${path.root}/scripts/custom_pre_hoon.sh",
               "${path.root}/scripts/${var.os_name}/update_${var.os_name}.sh",
               "${path.root}/scripts/_common/motd.sh",
               "${path.root}/scripts/_common/sshd.sh",
@@ -98,7 +98,8 @@ locals {
               "${path.root}/scripts/${var.os_name}/hyperv_${var.os_name}.sh",
               "${path.root}/scripts/${var.os_name}/cleanup_${var.os_name}.sh",
               "${path.root}/scripts/_common/parallels_post_cleanup_debian_ubuntu.sh",
-              "${path.root}/scripts/_common/minimize.sh"
+              "${path.root}/scripts/_common/minimize.sh",
+              "${path.root}/scripts/custom_post_hoon.sh"
               ] : (
               var.os_name == "fedora" ? [
                 "${path.root}/scripts/fedora/networking_fedora.sh",

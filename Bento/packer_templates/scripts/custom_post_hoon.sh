@@ -1,9 +1,5 @@
 #!/bin/sh -eux
-
-# add google dns server to avoid dns query error 
-cat <<EOF >/etc/resolv.conf
-nameserver 8.8.8.8
-EOF
+# due to some pkgs and configuration removed by some scripts
 
 # enable root & ssh connection 
 echo 'root:vagrant' | chpasswd
@@ -14,7 +10,7 @@ timedatectl set-timezone Asia/Seoul
 
 # install pkgs 
 apt-get update 
-apt-get install -y zip jq bpytop stress psmisc net-tools
+apt-get install -y zip jq bpytop stress psmisc net-tools bash-completion
 wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_arm64 -O /usr/bin/yq &&\
     chmod +x /usr/bin/yq
 
