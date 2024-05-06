@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+#TEMP_PWD=$(find . -type f -name "*.vmx")
+
+# Run from .vagrant/machines. that's more better result 
+
+# converting from vmx to qcow2 
+for f in $(find . -type f -name "*.vmx")
+do
+#     echo "$PWD"/"$f"
+     ovftool "$PWD"/"$f" "$PWD"/"$f".ovf
+     qemu-img convert -O qcow2 "$PWD"/"$f"-disk1.vmdk "$PWD"/"$f".qcow2
+     qemu-img convert -c -O qcow2 "$PWD"/"$f".qcow2 "$PWD"/"$f"-shrunk.qcow2 
+     cp -f "$PWD"/"$f"-shrunk.qcow2 ~/Documents/img_convert/qcow2_files/arm64/${f:2:13}"(github_SysNet4Admin)"-arm64.qcow2
+#    qemu-img convert -c -O qcow2 "$PWD"/"$f".qcow2 "$PWD"/"$f"-shrunk.qcow2 
+done
+
+# remove all temp-converting files 
+echo "Remove all temp-converting files"
+for f in $(find . -type f -name "*.vmx")
+do
+      rm -f "$PWD"/"$f".ovf
+      rm -f "$PWD"/"$f".mf 
+      rm -f "$PWD"/"$f"-disk1.vmdk
+      rm -f "$PWD"/"$f".qcow2
+      rm -f "$PWD"/"$f"-shrunk.qcow2
+done 
