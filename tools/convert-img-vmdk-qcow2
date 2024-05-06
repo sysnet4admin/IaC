@@ -13,7 +13,7 @@ for f in *.vmdk
 do
      qemu-img convert -O qcow2 "$f" "$f".qcow2
      qemu-img convert -c -O qcow2 "$f".qcow2 "$f"-shrunk.qcow2 
-     mv -f "$f"-shrunk.qcow2 ../qcow2_files/x86_64/"${f:0:34}".qcow2
+     mv -f "$f"-shrunk.qcow2 ../qcow2_files/x86-64/"${f:0:34}"-x86-64.qcow2
 done
 
 # remove all temp-converting files 
