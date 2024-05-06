@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# uncompress ova files 
+echo "Uncompress ova files" 
+for f in *.ova
+do
+     tar -xvf "$f"
+done
+
+# converting from vmdk to qcow2 
+echo "Converting from vmdk to qcow2"
+for f in *.vmdk
+do
+     qemu-img convert -O qcow2 "$f" "$f".qcow2
+     qemu-img convert -c -O qcow2 "$f".qcow2 "$f"-shrunk.qcow2 
+     mv -f "$f"-shrunk.qcow2 ../qcow2_files/x86_64/"${f:0:34}".qcow2
+done
+
+# remove all temp-converting files 
+echo "Remove all temp-converting files"
+rm -f *.ovf 
+rm -f *.mf 
+rm -f *.vmdk 
+rm -f *.qcow2 
+
