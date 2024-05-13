@@ -13,7 +13,7 @@
 
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
-# eskctl 
+# eksctl 
 brew install eksctl
 
 # kubelogin for GCP 
