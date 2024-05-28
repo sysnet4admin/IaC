@@ -1,6 +1,6 @@
-FROM nginx:stable
+FROM nginx:1.26.0-alpine-slim
 
-LABEL Name=chk-info Version=0.0.9
+LABEL Name=chk-info Version=1.26.0
 
 RUN rm -rf /etc/nginx/conf.d/default.conf
 COPY app.conf /etc/nginx/conf.d/
