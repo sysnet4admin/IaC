@@ -1,6 +1,6 @@
-FROM nginx:1.20.1
+FROM nginx:1.26.0-alpine-slim
 
-LABEL Name=tardy-nginx Version=1.20.1
+LABEL Name=tardy-nginx Version=1.26.0
 
 COPY startup.sh /
 RUN chmod +x /startup.sh 
