@@ -2,6 +2,7 @@ FROM nginx:1.26.0-alpine-slim
 
 LABEL Name=audit-trail(chk-log) Version=1.26.0
 
+# default alias from /bin/bash to /bin/ash 
 RUN apk add --no-cache bash \
     && ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
