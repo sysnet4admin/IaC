@@ -1,8 +1,10 @@
-FROM nginx:stable
+FROM nginx:1.26.0-alpine-slim
 
-LABEL NAME=test-hpa Version=0.0.1
+LABEL NAME=hpa-cpu-memory Version=1.26.0
+
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY run.sh /run.sh
+
 EXPOSE 80
 
 ENTRYPOINT ["/run.sh"]
