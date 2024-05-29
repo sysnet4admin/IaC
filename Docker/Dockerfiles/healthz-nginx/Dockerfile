@@ -1,6 +1,6 @@
-FROM nginx:1.20.1
+FROM nginx:1.26.0-alpine-slim
 
-LABEL Name=healthz-nginx Version=1.20.1
+LABEL Name=healthz-nginx Version=1.26.0
 
 RUN rm -rf /etc/nginx/conf.d/default.conf
 COPY app.conf /etc/nginx/conf.d/
