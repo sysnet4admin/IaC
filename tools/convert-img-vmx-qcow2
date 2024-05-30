@@ -2,7 +2,8 @@
 
 #TEMP_PWD=$(find . -type f -name "*.vmx")
 
-# Run from .vagrant/machines. that's more better result 
+# Run from .vagrant/machines. so check && move 
+cd .vagrant/machines || { echo >&2 "Here is not Vagrantfile dir!"; exit 1 ;}
 
 # converting from vmx to qcow2 
 for f in $(find . -type f -name "*.vmx")
