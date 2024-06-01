@@ -10,7 +10,7 @@ timedatectl set-timezone Asia/Seoul
 
 # install pkgs 
 apt-get update 
-apt-get install -y zip jq bpytop stress psmisc net-tools bash-completion
+apt-get install -y zip jq bpytop stress psmisc net-tools bash-completion sshpass
 wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_arm64 -O /usr/bin/yq &&\
     chmod +x /usr/bin/yq
 
