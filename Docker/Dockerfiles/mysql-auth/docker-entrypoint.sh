@@ -72,10 +72,12 @@ docker_process_init_files() {
 					. "$f"
 				fi
 				;;
-			*.sql)    mysql_note "$0: running $f"; docker_process_sql < "$f"; echo ;;
-			*.sql.gz) mysql_note "$0: running $f"; gunzip -c "$f" | docker_process_sql; echo ;;
-			*.sql.xz) mysql_note "$0: running $f"; xzcat "$f" | docker_process_sql; echo ;;
-			*)        mysql_warn "$0: ignoring $f" ;;
+			*.sql)     mysql_note "$0: running $f"; docker_process_sql < "$f"; echo ;;
+			*.sql.bz2) mysql_note "$0: running $f"; bunzip2 -c "$f" | docker_process_sql; echo ;;
+			*.sql.gz)  mysql_note "$0: running $f"; gunzip -c "$f" | docker_process_sql; echo ;;
+			*.sql.xz)  mysql_note "$0: running $f"; xzcat "$f" | docker_process_sql; echo ;;
+			*.sql.zst) mysql_note "$0: running $f"; zstd -dc "$f" | docker_process_sql; echo ;;
+			*)         mysql_warn "$0: ignoring $f" ;;
 		esac
 		echo
 	done
@@ -104,32 +106,23 @@ mysql_get_config() {
 	# match "datadir      /some/path with/spaces in/it here" but not "--xyz=abc\n     datadir (xyz)"
 }
 
+# Ensure that the package default socket can also be used
+# since rpm packages are compiled with a different socket location
+# and "mysqlsh --mysql" doesn't read the [client] config
+# related to https://github.com/docker-library/mysql/issues/829
+mysql_socket_fix() {
+	local defaultSocket
+	defaultSocket="$(mysql_get_config 'socket' mysqld --no-defaults)"
+	if [ "$defaultSocket" != "$SOCKET" ]; then
+		ln -sfTv "$SOCKET" "$defaultSocket" || :
+	fi
+}
+
 # Do a temporary startup of the MySQL server, for init purposes
 docker_temp_server_start() {
-	if [ "${MYSQL_MAJOR}" = '5.6' ] || [ "${MYSQL_MAJOR}" = '5.7' ]; then
-		"$@" --skip-networking --default-time-zone=SYSTEM --socket="${SOCKET}" &
-		mysql_note "Waiting for server startup"
-		local i
-		for i in {30..0}; do
-			# only use the root password if the database has already been initialized
-			# so that it won't try to fill in a password file when it hasn't been set yet
-			extraArgs=()
-			if [ -z "$DATABASE_ALREADY_EXISTS" ]; then
-				extraArgs+=( '--dont-use-mysql-root-password' )
-			fi
-			if docker_process_sql "${extraArgs[@]}" --database=mysql <<<'SELECT 1' &> /dev/null; then
-				break
-			fi
-			sleep 1
-		done
-		if [ "$i" = 0 ]; then
-			mysql_error "Unable to start server."
-		fi
-	else
-		# For 5.7+ the server is ready for use as soon as startup command unblocks
-		if ! "$@" --daemonize --skip-networking --default-time-zone=SYSTEM --socket="${SOCKET}"; then
-			mysql_error "Unable to start server."
-		fi
+	# For 5.7+ the server is ready for use as soon as startup command unblocks
+	if ! "$@" --daemonize --skip-networking --default-time-zone=SYSTEM --socket="${SOCKET}"; then
+		mysql_error "Unable to start server."
 	fi
 }
 
@@ -146,7 +139,7 @@ docker_verify_minimum_env() {
 	if [ -z "$MYSQL_ROOT_PASSWORD" -a -z "$MYSQL_ALLOW_EMPTY_PASSWORD" -a -z "$MYSQL_RANDOM_ROOT_PASSWORD" ]; then
 		mysql_error <<-'EOF'
 			Database is uninitialized and password option is not specified
-			    You need to specify one of the following:
+			    You need to specify one of the following as an environment variable:
 			    - MYSQL_ROOT_PASSWORD
 			    - MYSQL_ALLOW_EMPTY_PASSWORD
 			    - MYSQL_RANDOM_ROOT_PASSWORD
@@ -177,32 +170,52 @@ docker_verify_minimum_env() {
 docker_create_db_directories() {
 	local user; user="$(id -u)"
 
-	# TODO other directories that are used by default? like /var/lib/mysql-files
-	# see https://github.com/docker-library/mysql/issues/562
-	mkdir -p "$DATADIR"
+	local -A dirs=( ["$DATADIR"]=1 )
+	local dir
+	dir="$(dirname "$SOCKET")"
+	dirs["$dir"]=1
+
+	# "datadir" and "socket" are already handled above (since they were already queried previously)
+	local conf
+	for conf in \
+		general-log-file \
+		keyring_file_data \
+		pid-file \
+		secure-file-priv \
+		slow-query-log-file \
+	; do
+		dir="$(mysql_get_config "$conf" "$@")"
+
+		# skip empty values
+		if [ -z "$dir" ] || [ "$dir" = 'NULL' ]; then
+			continue
+		fi
+		case "$conf" in
+			secure-file-priv)
+				# already points at a directory
+				;;
+			*)
+				# other config options point at a file, but we need the directory
+				dir="$(dirname "$dir")"
+				;;
+		esac
+
+		dirs["$dir"]=1
+	done
+
+	mkdir -p "${!dirs[@]}"
 
 	if [ "$user" = "0" ]; then
 		# this will cause less disk access than `chown -R`
-		find "$DATADIR" \! -user mysql -exec chown mysql '{}' +
+		find "${!dirs[@]}" \! -user mysql -exec chown --no-dereference mysql '{}' +
 	fi
 }
 
 # initializes the database directory
 docker_init_database_dir() {
 	mysql_note "Initializing database files"
-	if [ "$MYSQL_MAJOR" = '5.6' ]; then
-		mysql_install_db --datadir="$DATADIR" --rpm --keep-my-cnf "${@:2}" --default-time-zone=SYSTEM
-	else
-		"$@" --initialize-insecure --default-time-zone=SYSTEM
-	fi
+	"$@" --initialize-insecure --default-time-zone=SYSTEM
 	mysql_note "Database files initialized"
-
-	if command -v mysql_ssl_rsa_setup > /dev/null && [ ! -e "$DATADIR/server-key.pem" ]; then
-		# https://github.com/mysql/mysql-server/blob/23032807537d8dd8ee4ec1c4d40f0633cd4e12f9/packaging/deb-in/extra/mysql-systemd-start#L81-L84
-		mysql_note "Initializing certificates"
-		mysql_ssl_rsa_setup --datadir="$DATADIR"
-		mysql_note "Certificates initialized"
-	fi
 }
 
 # Loads various settings that are used elsewhere in the script
@@ -256,7 +269,7 @@ docker_setup_db() {
 	fi
 	# Generate random root password
 	if [ -n "$MYSQL_RANDOM_ROOT_PASSWORD" ]; then
-		export MYSQL_ROOT_PASSWORD="$(pwgen -1 32)"
+		MYSQL_ROOT_PASSWORD="$(openssl rand -base64 24)"; export MYSQL_ROOT_PASSWORD
 		mysql_note "GENERATED ROOT PASSWORD: $MYSQL_ROOT_PASSWORD"
 	fi
 	# Sets root password and creates root users for non-localhost hosts
@@ -272,25 +285,10 @@ docker_setup_db() {
 	fi
 
 	local passwordSet=
-	if [ "$MYSQL_MAJOR" = '5.6' ]; then
-		# no, we don't care if read finds a terminating character in this heredoc (see above)
-		read -r -d '' passwordSet <<-EOSQL || true
-			DELETE FROM mysql.user WHERE user NOT IN ('mysql.sys', 'mysqlxsys', 'root') OR host NOT IN ('localhost') ;
-			SET PASSWORD FOR 'root'@'localhost'=PASSWORD('${MYSQL_ROOT_PASSWORD}') ;
-
-			-- 5.5: https://github.com/mysql/mysql-server/blob/e48d775c6f066add457fa8cfb2ebc4d5ff0c7613/scripts/mysql_secure_installation.sh#L192-L210
-			-- 5.6: https://github.com/mysql/mysql-server/blob/06bc670db0c0e45b3ea11409382a5c315961f682/scripts/mysql_secure_installation.sh#L218-L236
-			-- 5.7: https://github.com/mysql/mysql-server/blob/913071c0b16cc03e703308250d795bc381627e37/client/mysql_secure_installation.cc#L792-L818
-			-- 8.0: https://github.com/mysql/mysql-server/blob/b93c1661d689c8b7decc7563ba15f6ed140a4eb6/client/mysql_secure_installation.cc#L726-L749
-			DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%' ;
-			-- https://github.com/docker-library/mysql/pull/479#issuecomment-414561272 ("This is only needed for 5.5 and 5.6")
-		EOSQL
-	else
-		# no, we don't care if read finds a terminating character in this heredoc (see above)
-		read -r -d '' passwordSet <<-EOSQL || true
-			ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}' ;
-		EOSQL
-	fi
+	# no, we don't care if read finds a terminating character in this heredoc (see above)
+	read -r -d '' passwordSet <<-EOSQL || true
+		ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}' ;
+	EOSQL
 
 	# tell docker_process_sql to not use MYSQL_ROOT_PASSWORD since it is just now being set
 	docker_process_sql --dont-use-mysql-root-password --database=mysql <<-EOSQL
@@ -359,16 +357,6 @@ _mysql_want_help() {
 }
 
 _main() {
-        # custom-by-hoon
-        if [ "${MYSQL_USER_ID}" != 'db-user' ]; then
-               echo "USER_ID unmatched"
-               exit 1
-        fi
-        if [ "${MYSQL_USER_PASSWORD}" != 'hoon' ]; then
-               echo "PASSWORD unmatched"
-               exit 1
-        fi
-
 	# if command starts with an option, prepend mysqld
 	if [ "${1:0:1}" = '-' ]; then
 		set -- mysqld "$@"
@@ -381,7 +369,7 @@ _main() {
 		mysql_check_config "$@"
 		# Load various environment variables
 		docker_setup_env "$@"
-		docker_create_db_directories
+		docker_create_db_directories "$@"
 
 		# If container is started as root user, restart as dedicated mysql user
 		if [ "$(id -u)" = "0" ]; then
@@ -402,6 +390,7 @@ _main() {
 			docker_temp_server_start "$@"
 			mysql_note "Temporary server started."
 
+			mysql_socket_fix
 			docker_setup_db
 			docker_process_init_files /docker-entrypoint-initdb.d/*
 
@@ -414,6 +403,8 @@ _main() {
 			echo
 			mysql_note "MySQL init process done. Ready for start up."
 			echo
+		else
+			mysql_socket_fix
 		fi
 	fi
 	exec "$@"
