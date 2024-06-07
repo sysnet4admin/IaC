@@ -1,96 +1,122 @@
-# Source: https://github.com/docker-library/mysql.git
 #
 # NOTE: THIS DOCKERFILE IS GENERATED VIA "apply-templates.sh"
 #
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM debian:buster-slim
+FROM oraclelinux:9-slim
 
-# add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
-RUN groupadd -r mysql && useradd -r -g mysql mysql
-
-RUN apt-get update && apt-get install -y --no-install-recommends gnupg dirmngr && rm -rf /var/lib/apt/lists/*
+RUN set -eux; \
+	groupadd --system --gid 999 mysql; \
+	useradd --system --uid 999 --gid 999 --home-dir /var/lib/mysql --no-create-home mysql
 
 # add gosu for easy step-down from root
 # https://github.com/tianon/gosu/releases
-ENV GOSU_VERSION 1.12
+ENV GOSU_VERSION 1.17
 RUN set -eux; \
-	savedAptMark="$(apt-mark showmanual)"; \
-	apt-get update; \
-	apt-get install -y --no-install-recommends ca-certificates wget; \
-	rm -rf /var/lib/apt/lists/*; \
-	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
-	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
-	wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
+# TODO find a better userspace architecture detection method than querying the kernel
+	arch="$(uname -m)"; \
+	case "$arch" in \
+		aarch64) gosuArch='arm64' ;; \
+		x86_64) gosuArch='amd64' ;; \
+		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
+	esac; \
+	curl -fL -o /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$gosuArch.asc"; \
+	curl -fL -o /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$gosuArch"; \
 	export GNUPGHOME="$(mktemp -d)"; \
 	gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
 	gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
-	gpgconf --kill all; \
 	rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc; \
-	apt-mark auto '.*' > /dev/null; \
-	[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark > /dev/null; \
-	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
 	chmod +x /usr/local/bin/gosu; \
 	gosu --version; \
 	gosu nobody true
 
-RUN mkdir /docker-entrypoint-initdb.d
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-# for MYSQL_RANDOM_ROOT_PASSWORD
-		pwgen \
-# for mysql_ssl_rsa_setup
+RUN set -eux; \
+	microdnf install -y \
+		bzip2 \
+		gzip \
 		openssl \
-# FATAL ERROR: please install the following Perl modules before executing /usr/local/mysql/scripts/mysql_install_db:
-# File::Basename
-# File::Copy
-# Sys::Hostname
-# Data::Dumper
-		perl \
-# install "xz-utils" for .sql.xz docker-entrypoint-initdb.d files
-		xz-utils \
-	&& rm -rf /var/lib/apt/lists/*
+		xz \
+		zstd \
+# Oracle Linux 8+ is very slim :)
+		findutils \
+	; \
+	microdnf clean all
 
-RUN set -ex; \
-# gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
-	key='A4A9406876FCBD3C456770C88C718D3B5072E1F5'; \
+RUN set -eux; \
+# https://dev.mysql.com/doc/refman/8.0/en/checking-gpg-signature.html
+# pub   rsa4096 2023-10-23 [SC] [expires: 2025-10-22]
+#       BCA4 3417 C3B4 85DD 128E  C6D4 B7B3 B788 A8D3 785C
+# uid           [ unknown] MySQL Release Engineering <mysql-build@oss.oracle.com>
+# sub   rsa4096 2023-10-23 [E] [expires: 2025-10-22]
+	key='BCA4 3417 C3B4 85DD 128E C6D4 B7B3 B788 A8D3 785C'; \
 	export GNUPGHOME="$(mktemp -d)"; \
 	gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "$key"; \
-	gpg --batch --export "$key" > /etc/apt/trusted.gpg.d/mysql.gpg; \
-	gpgconf --kill all; \
-	rm -rf "$GNUPGHOME"; \
-	apt-key list > /dev/null
+	gpg --batch --export --armor "$key" > /etc/pki/rpm-gpg/RPM-GPG-KEY-mysql; \
+	rm -rf "$GNUPGHOME"
 
-ENV MYSQL_MAJOR 8.0
-ENV MYSQL_VERSION 8.0.26-1debian10
+ENV MYSQL_MAJOR 8.4
+ENV MYSQL_VERSION 8.4.0-1.el9
 
-RUN echo 'deb http://repo.mysql.com/apt/debian/ buster mysql-8.0' > /etc/apt/sources.list.d/mysql.list
+RUN set -eu; \
+	{ \
+		echo '[mysql8.4-server-minimal]'; \
+		echo 'name=MySQL 8.4 Server Minimal'; \
+		echo 'enabled=1'; \
+		echo 'baseurl=https://repo.mysql.com/yum/mysql-8.4-community/docker/el/9/$basearch/'; \
+		echo 'gpgcheck=1'; \
+		echo 'gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql'; \
+# https://github.com/docker-library/mysql/pull/680#issuecomment-825930524
+		echo 'module_hotfixes=true'; \
+	} | tee /etc/yum.repos.d/mysql-community-minimal.repo
 
-# the "/var/lib/mysql" stuff here is because the mysql-server postinst doesn't have an explicit way to disable the mysql_install_db codepath besides having a database already "configured" (ie, stuff in /var/lib/mysql/mysql)
-# also, we set debconf keys to make APT a little quieter
-RUN { \
-		echo mysql-community-server mysql-community-server/data-dir select ''; \
-		echo mysql-community-server mysql-community-server/root-pass password ''; \
-		echo mysql-community-server mysql-community-server/re-root-pass password ''; \
-		echo mysql-community-server mysql-community-server/remove-test-db select false; \
-	} | debconf-set-selections \
-	&& apt-get update \
-	&& apt-get install -y \
-		mysql-community-client="${MYSQL_VERSION}" \
-		mysql-community-server-core="${MYSQL_VERSION}" \
-	&& rm -rf /var/lib/apt/lists/* \
-	&& rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql /var/run/mysqld \
-	&& chown -R mysql:mysql /var/lib/mysql /var/run/mysqld \
+RUN set -eux; \
+	microdnf install -y "mysql-community-server-minimal-$MYSQL_VERSION"; \
+	microdnf clean all; \
+# the "socket" value in the Oracle packages is set to "/var/lib/mysql" which isn't a great place for the socket (we want it in "/var/run/mysqld" instead)
+# https://github.com/docker-library/mysql/pull/680#issuecomment-636121520
+	grep -F 'socket=/var/lib/mysql/mysql.sock' /etc/my.cnf; \
+	sed -i 's!^socket=.*!socket=/var/run/mysqld/mysqld.sock!' /etc/my.cnf; \
+	grep -F 'socket=/var/run/mysqld/mysqld.sock' /etc/my.cnf; \
+	{ echo '[client]'; echo 'socket=/var/run/mysqld/mysqld.sock'; } >> /etc/my.cnf; \
+	\
+# make sure users dumping files in "/etc/mysql/conf.d" still works
+	! grep -F '!includedir' /etc/my.cnf; \
+	{ echo; echo '!includedir /etc/mysql/conf.d/'; } >> /etc/my.cnf; \
+	mkdir -p /etc/mysql/conf.d; \
+# ensure these directories exist and have useful permissions
+# the rpm package has different opinions on the mode of `/var/run/mysqld`, so this needs to be after install
+	mkdir -p /var/lib/mysql /var/run/mysqld; \
+	chown mysql:mysql /var/lib/mysql /var/run/mysqld; \
 # ensure that /var/run/mysqld (used for socket and lock files) is writable regardless of the UID our mysqld instance ends up having at runtime
-	&& chmod 1777 /var/run/mysqld /var/lib/mysql
+	chmod 1777 /var/lib/mysql /var/run/mysqld; \
+	\
+	mkdir /docker-entrypoint-initdb.d; \
+	\
+	mysqld --version; \
+	mysql --version
+
+RUN set -eu; \
+	{ \
+		echo '[mysql-tools-community]'; \
+		echo 'name=MySQL Tools Community'; \
+		echo 'baseurl=https://repo.mysql.com/yum/mysql-tools-8.4-community/el/9/$basearch/'; \
+		echo 'enabled=1'; \
+		echo 'gpgcheck=1'; \
+		echo 'gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql'; \
+# https://github.com/docker-library/mysql/pull/680#issuecomment-825930524
+		echo 'module_hotfixes=true'; \
+	} | tee /etc/yum.repos.d/mysql-community-tools.repo
+ENV MYSQL_SHELL_VERSION 8.4.0-1.el9
+RUN set -eux; \
+	microdnf install -y "mysql-shell-$MYSQL_SHELL_VERSION"; \
+	microdnf clean all; \
+	\
+	mysqlsh --version
 
 VOLUME /var/lib/mysql
 
-# Config files
-COPY config/ /etc/mysql/
 COPY docker-entrypoint.sh /usr/local/bin/
-RUN ln -s usr/local/bin/docker-entrypoint.sh /entrypoint.sh # backwards compat
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 3306 33060
