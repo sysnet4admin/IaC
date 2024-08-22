@@ -1,0 +1,38 @@
+name: Docker build workflow for IaC
+
+on:
+  workflow_dispatch:
+    inputs:
+        docker_project:
+          description: 'Name of the Dockerfiles directory (e.g.: check-info)'
+          required: true
+        tag_list:
+          description: 'tag names to publish. Default: "latest"'
+          default: 'latest'
+          required: false
+
+jobs:
+  build-and-publish-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: setup docker buildx config
+        uses: docker/setup-buildx-action@v3
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push Prod container to DockerHub Registry
+        env:
+          DOCKER_REPO_URI: sysnet4admin/${{ github.event.inputs.docker_project }}
+        uses: docker/build-push-action@v5
+        with:
+          context: Docker/Dockerfiles/${{ github.event.inputs.docker_project }}/.
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.DOCKER_REPO_URI }}:${{ github.event.inputs.tag_list }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
