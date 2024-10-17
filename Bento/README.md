@@ -1,8 +1,8 @@
-# Bento's source 
+# Bento's source
 https://github.com/chef/bento
 
-# Run 
-```bash 
+# Run
+```bash
 bento build --cpus 4 --only=vmware-iso.vm os_pkrvars/ubuntu/ubuntu-22.04-aarch64.pkrvars.hcl
 ```
 
@@ -11,8 +11,8 @@ bento build --cpus 4 --only=vmware-iso.vm os_pkrvars/ubuntu/ubuntu-22.04-aarch64
  bento build --cpus 4 --dry-run --only=vmware-iso.vm os_pkrvars/ubuntu/ubuntu-22.04-aarch64.pkrvars.hcl
 ```
 
-# Modified 
-- ubuntu-22.04-aarch64.pkrvars.hcl
-+ custom_hoon.sh
-  - custom_pre_hoon.sh 
-  - custom_post_hoon.sh 
+# Modified
+- ubuntu-22.04-aarch64.pkrvars.hcl in local iso 
++ pkr-builder.pkr.hcl
+  - custom_pre_hoon.sh
+  - custom_post_hoon.sh
