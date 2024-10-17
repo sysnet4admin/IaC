@@ -1,0 +1,35 @@
+#cloud-config
+autoinstall:
+  version: 1
+  identity:
+    hostname: k8s
+    username: vagrant
+    password: '$6$rounds=4096$5CU3LEj/MQvbkfPb$LmKEF9pCfU8R.dA.GemgE/8GT6r9blge3grJvdsVTMFKyLEQwzEF3SGWqAzjawY/XHRpWj4fOiLBrRyxJhIRJ1'
+
+  users:
+  - name: root
+    lock_passwd: false
+    passwd: $6$TbOu26d1hYO4EC/D$MymO7cTo/tID7tkH8TtAGyAdaK9nHwGQfDD9KwQmql3xP1BPPc67YCmoR8UO3Dw5jacOx3GvnBLqvAmHLHC4H0
+    sudo: ALL=(ALL) NOPASSWD:ALL
+
+  # Enable password authentication for SSH
+  write_files:
+  - path: /etc/cloud/cloud.cfg.d/90_enable_ssh_pwauth.cfg
+    content: |
+      runcmd:
+        - sed -i "s/^PermitRootLogin.*/PermitRootLogin yes/" /etc/ssh/sshd_config
+        - systemctl restart sshd
+
+  early-commands:
+    # otherwise packer tries to connect and exceed max attempts:
+    - systemctl stop ssh.service
+    - systemctl stop ssh.socket
+  ssh:
+    install-server: yes
+    allow-pw: yes
+  late-commands:
+    # - sed -i 's/^#*\(send dhcp-client-identifier\).*$/\1 = hardware;/' /target/etc/dhcp/dhclient.conf
+    - 'sed -i "s/dhcp4: true/&\n      dhcp-identifier: mac/" /target/etc/netplan/00-installer-config.yaml'
+    - echo 'vagrant ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/vagrant
+    # Enable hyper-v daemons only if using hyper-v virtualization
+    - if [ $(virt-what) == "hyperv" ]; then apt-get update && apt-get install -y hyperv-daemons linux-tools-$(uname -r) linux-cloud-tools-$(uname -r) linux-cloud-tools-common cifs-utils && systemctl enable hypervvssd && systemctl enable hypervkvpd && systemctl start hypervvssd && systemctl start hypervkvpd; fi
