@@ -1,0 +1,19 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: native-deny-hostnetwork
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+    - name: host-network
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      validate:
+        message: "HostNetwork usage is not allowed in Pods."
+        pattern:
+          spec:
+            hostNetwork: "false"

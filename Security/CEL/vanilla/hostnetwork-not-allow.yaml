@@ -1,0 +1,23 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: "hostnetwork-not-allow"
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+  validations:
+    - expression: "!has(object.spec.hostNetwork) || object.spec.hostNetwork != true"
+      message: "HostNetwork usage is not allowed in Pods."
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: "hostnetwork-not-allow-binding"
+spec:
+  policyName: "hostnetwork-not-allow"
+  validationActions: [Deny]
