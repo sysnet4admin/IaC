@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: yes_hostNetwork
+  name: yes-hostNetwork
 spec:
   hostNetwork: true
   containers:
