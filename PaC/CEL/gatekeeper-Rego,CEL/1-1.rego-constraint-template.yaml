@@ -1,16 +1,16 @@
 apiVersion: templates.gatekeeper.sh/v1beta1
 kind: ConstraintTemplate
 metadata:
-  name: nohostnetworkrego
+  name: regoconstrainttemplatenohostnetwork
 spec:
   crd:
     spec:
       names:
-        kind: NoHostNetworkRego
+        kind: RegoConstraintTemplateNoHostNetwork
   targets:
     - target: admission.k8s.gatekeeper.sh
       rego: |
-        package nohostnetworkrego
+        package regoconstrainttemplatenohostnetwork
 
         violation[{"msg": msg}] {
           input.review.kind.kind == "Pod"
