@@ -1,7 +1,7 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
-kind: K8sNoHostNetworkCEL
+kind: CELConstraintTemplateNoHostNetwork
 metadata:
-  name: no-hostnetwork-cel
+  name: cel-constraintnohostnetwork
 spec:
   match:
     kinds:
