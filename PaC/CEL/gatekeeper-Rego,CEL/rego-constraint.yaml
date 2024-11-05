@@ -1,7 +1,7 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
-kind: K8sDenyNoHostNetwork
+kind: K8sNoHostNetwork
 metadata:
-  name: deny-hostnetwork-rego
+  name: no-hostnetwork-rego
 spec:
   match:
     kinds:
