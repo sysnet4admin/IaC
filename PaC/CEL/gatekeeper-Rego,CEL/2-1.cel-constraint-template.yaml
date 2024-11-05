@@ -1,12 +1,12 @@
 apiVersion: templates.gatekeeper.sh/v1beta1
 kind: ConstraintTemplate
 metadata:
-  name: k8sdenynohostnetworkcel
+  name: k8snohostnetworkcel
 spec:
   crd:
     spec:
       names:
-        kind: K8sDenyNoHostNetworkCEL
+        kind: K8sNoHostNetworkCEL
   targets:
     - target: admission.k8s.gatekeeper.sh
       code:
@@ -14,4 +14,4 @@ spec:
           source:
             validations:
             - expression: "!has(object.spec.hostNetwork) || object.spec.hostNetwork != true"
-              message: "HostNetwork usage is not allowed for pods"
+              message: "HostNetwork is not allowed for the pod"
