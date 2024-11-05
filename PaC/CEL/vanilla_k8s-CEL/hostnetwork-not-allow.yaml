@@ -12,7 +12,7 @@ spec:
         resources: ["pods"]
   validations:
     - expression: "!has(object.spec.hostNetwork) || object.spec.hostNetwork != true"
-      message: "HostNetwork usage is not allowed in Pods."
+      message: "HostNetwork is not allowed in Pods."
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
