@@ -2,7 +2,9 @@ FROM nginx:1.26.0-alpine-slim
 
 LABEL Name=healthz-nginx Version=1.26.0
 
-RUN rm -rf /etc/nginx/conf.d/default.conf
+RUN apk add --no-cache bash \
+    && rm -rf /etc/nginx/conf.d/default.conf
+
 COPY app.conf /etc/nginx/conf.d/
 COPY healthz /usr/share/nginx/html 
 

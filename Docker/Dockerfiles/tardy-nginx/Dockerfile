@@ -3,7 +3,8 @@ FROM nginx:1.26.0-alpine-slim
 LABEL Name=tardy-nginx Version=1.26.0
 
 COPY startup.sh /
-RUN apk add bash ; chmod +x /startup.sh 
+RUN apk add --no-cache bash \
+    && chmod +x /startup.sh 
 CMD ["/startup.sh"]
 RUN echo "tardy again" > /usr/share/nginx/html/index.html 
 
