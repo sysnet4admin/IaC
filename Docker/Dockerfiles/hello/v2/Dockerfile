@@ -2,7 +2,9 @@ FROM nginx:1.24.0-alpine-slim
 
 LABEL Name=hello Version=v2
 
-RUN rm -rf /etc/nginx/conf.d/default.conf
+RUN apk add --no-cache bash \
+    && rm -rf /etc/nginx/conf.d/default.conf
+
 COPY app.conf /etc/nginx/conf.d/
 COPY index.html /usr/share/nginx/html 
 
