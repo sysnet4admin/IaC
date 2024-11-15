@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: no-hostNetwork
+  name: no-hostnetwork
 spec:
   containers:
     - name: nginx
