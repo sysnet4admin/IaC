@@ -1,0 +1,9 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: RegoConstraintTemplateNoReplicasLess3
+metadata:
+  name: rego-constraintnoreplicasless3
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Deployment"]
