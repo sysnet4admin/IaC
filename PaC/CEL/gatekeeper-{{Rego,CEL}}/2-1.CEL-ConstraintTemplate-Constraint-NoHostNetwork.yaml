@@ -15,3 +15,13 @@ spec:
             validations:
             - expression: "!has(object.spec.hostNetwork) || object.spec.hostNetwork != true"
               message: "HostNetwork is not allowed for the pod"
+---
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: CELConstraintTemplateNoHostNetwork
+metadata:
+  name: cel-constraintnohostnetwork
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]

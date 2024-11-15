@@ -17,3 +17,13 @@ spec:
           input.review.object.spec.hostNetwork == true
           msg := "HostNetwork is not allowed for the pod"
         }
+---
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: RegoConstraintTemplateNoHostNetwork
+metadata:
+  name: rego-constraintnohostnetwork
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
