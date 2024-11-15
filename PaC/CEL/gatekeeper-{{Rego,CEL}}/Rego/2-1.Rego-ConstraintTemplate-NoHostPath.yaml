@@ -14,6 +14,6 @@ spec:
 
         violation[{"msg": msg}] {
           input.review.kind.kind == "Pod"
-          input.review.object.spec.hostPath == true
+          input.review.object.spec.volumes.hostPath == true
           msg := "HostPath is not allowed for the pod"
         }
