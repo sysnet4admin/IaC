@@ -1,4 +1,5 @@
 # FROM https://raw.githubusercontent.com/open-policy-agent/gatekeeper/v3.17.1/deploy/gatekeeper.yaml
+
 apiVersion: v1
 kind: Namespace
 metadata:
