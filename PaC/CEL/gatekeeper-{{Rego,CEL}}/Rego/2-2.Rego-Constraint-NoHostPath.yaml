@@ -6,4 +6,4 @@ spec:
   match:
     kinds:
       - apiGroups: [""]
-        kinds: ["Pod"]
+        kinds: ["DaemonSet", "Pod", "Deployment"]
