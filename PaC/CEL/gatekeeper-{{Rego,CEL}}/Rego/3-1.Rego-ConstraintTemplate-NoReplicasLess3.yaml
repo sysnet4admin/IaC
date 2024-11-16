@@ -15,5 +15,10 @@ spec:
         violation[{"msg": msg}] {
           input.review.kind.kind == "Deployment"
           input.review.object.spec.replicas < "3"
+           # beauty calculate sample by paramters.min 
+ #         provided := input.review.object.spec.replicas
+ #         required := input.parameters.min
+ #         missing := required - provided
+ #         missing > 0
           msg := "Replicas is not allowed less than 3"
         }
