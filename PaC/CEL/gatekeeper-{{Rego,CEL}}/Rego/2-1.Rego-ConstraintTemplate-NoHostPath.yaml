@@ -13,7 +13,8 @@ spec:
         package regoconstrainttemplatenohostpath 
 
         violation[{"msg": msg}] {
-        #  input.review.kind.kind == "Pod"
-          input.review.object.spec.volumes[_].hostPath 
-          msg := "HostPath is not allowed for the Pod"
+        # applying all objects 
+        #  input.review.kind.kind == "Pod" 
+          input.review.object.spec.template.spec.volumes[_].hostPath 
+          msg := "HostPath is not allowed for the template of Pod"
         }

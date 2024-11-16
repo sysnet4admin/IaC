@@ -6,4 +6,5 @@ spec:
   match:
     kinds:
       - apiGroups: ["apps"]
+        # Replicas is not matched due to testing purpose 
         kinds: ["DaemonSet", "Deployment"]
