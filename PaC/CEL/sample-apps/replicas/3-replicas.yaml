@@ -15,5 +15,5 @@ spec:
         app: 3-replicas
     spec:
       containers:
-      - image: nginx
-        name: nginx:nginx:1.27.2-alpine-slim
+      - name: nginx
+        image: nginx:1.27.2-alpine-slim
