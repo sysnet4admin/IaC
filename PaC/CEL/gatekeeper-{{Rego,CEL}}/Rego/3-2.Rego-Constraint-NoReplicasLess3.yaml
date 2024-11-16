@@ -7,3 +7,6 @@ spec:
     kinds:
       - apiGroups: ["apps"]
         kinds: ["Deployment"]
+#  parameters will use at ConstraintTemplate 
+#  parameters:
+#    min: 2
