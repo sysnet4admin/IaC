@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Replicas 
+kind: ReplicaSet
 metadata:
   labels:
     app: 3-replicas
