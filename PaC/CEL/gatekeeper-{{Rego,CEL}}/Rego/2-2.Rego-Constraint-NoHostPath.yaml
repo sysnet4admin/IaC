@@ -5,5 +5,5 @@ metadata:
 spec:
   match:
     kinds:
-      - apiGroups: [""]
-        kinds: ["DaemonSet", "Pod", "Deployment"]
+      - apiGroups: ["apps"]
+        kinds: ["DaemonSet", "Deployment"]
