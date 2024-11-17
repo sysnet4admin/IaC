@@ -13,5 +13,7 @@ spec:
         - engine: K8sNativeValidation
           source:
             validations:
-            - expression: "!has(object.spec.template.spec.volumes[_].hostPath || object.spec.hostNetwork != true"
+            - expression: "!has(object.spec.template.spec.volumes) 
+                            || 
+                            object.spec.template.spec.volumes.all(volume, !has(volume.hostPath))"
               message: "HostPath is not allowed for template of Pod"
