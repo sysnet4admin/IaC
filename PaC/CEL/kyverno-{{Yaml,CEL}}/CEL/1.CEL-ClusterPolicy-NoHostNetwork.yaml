@@ -14,5 +14,6 @@ spec:
     validate:
       cel:
         expressions:
-        - expression: "!has(object.spec.hostNetwork) || object.spec.hostNetwork != true"
+        - expression: "!has(object.spec.hostNetwork) || 
+                       object.spec.hostNetwork != true"
           message: "HostNetwork is not allowed for the Pod"
