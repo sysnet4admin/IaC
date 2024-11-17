@@ -10,9 +10,13 @@ spec:
       any:
       - resources:
           kinds:
-          - DaemonSet, Deployment 
+          - DaemonSet
+          - Deployment 
     validate:
       message: "HostPath is not allowed for the template of Pod"
       pattern:
         spec:
-          =(hostNetwork): "false"
+          template:
+            spec:
+              =(volumes):
+                - X(hostPath): "null"
