@@ -1,18 +1,20 @@
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: celclusterpolicynohostnetwork
+  name: celclusterpolicynoreplicasless3
 spec:
   validationFailureAction: Enforce
   rules:
-  - name: CELClusterPolicyNoHostNetwork
+  - name: CELClusterPolicyNoReplicasLess3
     match:
       any:
       - resources:
           kinds:
-          - Pod
+          - Deployment 
     validate:
       cel:
         expressions:
-        - expression: "!has(object.spec.hostNetwork) || object.spec.hostNetwork != true"
-          message: "HostNetwork is not allowed for the Pod"
+        - expression: "!has(object.spec.replicas) 
+                        || 
+                        !(object.spec.replicas < 2)"
+          message: "Replicas is not allowed less than 3"
