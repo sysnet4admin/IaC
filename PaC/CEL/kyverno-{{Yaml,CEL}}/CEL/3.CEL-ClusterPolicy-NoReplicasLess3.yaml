@@ -14,7 +14,6 @@ spec:
     validate:
       cel:
         expressions:
-        - expression: "!has(object.spec.replicas) 
-                        || 
-                        !(object.spec.replicas < 2)"
+        - expression: "!has(object.spec.replicas) || 
+                       object.spec.replicas > 2"
           message: "Replicas is not allowed less than 3"
