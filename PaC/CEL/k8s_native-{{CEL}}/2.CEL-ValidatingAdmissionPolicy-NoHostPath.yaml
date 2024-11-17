@@ -5,8 +5,8 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-    - apiGroups: [""]
-      apiVersions: ["apps/v1"]
+    - apiGroups: ["*"]
+      apiVersions: ["*"]
       operations: ["*"]
       resources: ["daemonsets","deployments"]
   validations:
