@@ -1,12 +1,9 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
-kind: RegoConstraintTemplateNoReplicasLess3
+kind: CELConstraintTemplateNoReplicasLess3
 metadata:
-  name: rego-constraintnoreplicasless3
+  name: cel-constraintnoreplicasless3
 spec:
   match:
     kinds:
       - apiGroups: ["apps"]
         kinds: ["Deployment"]
-#  parameters will use at ConstraintTemplate 
-#  parameters:
-#    min: 2
