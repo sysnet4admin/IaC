@@ -15,4 +15,4 @@ spec:
       message: "Replicas is not allowed less than 3"
       pattern:
         spec:
-          =(replicas): "!<3"
+          =(replicas): ">2"
