@@ -1,12 +1,12 @@
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: cel-deny-hostnetwork
+  name: celclusterpolicynohostnetwork
 spec:
   validationFailureAction: Enforce
   background: false
   rules:
-    - name: host-network
+    - name: CELClusterPolicyNoHostNetwork
       match:
         any:
         - resources:
@@ -16,4 +16,4 @@ spec:
         cel:
           expressions:
             - expression: "!has(object.spec.hostNetwork) || object.spec.hostNetwork != true"
-              message: "HostNetwork usage is not allowed in Pods."
+              message: "HostNetwork is not allowed for the Pod"
