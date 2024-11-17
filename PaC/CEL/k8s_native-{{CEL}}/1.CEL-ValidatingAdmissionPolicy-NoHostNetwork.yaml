@@ -6,8 +6,8 @@ spec:
   matchConstraints:
     resourceRules:
       - apiGroups: [""]
-        apiVersions: [""]
-        operations: [""]
+        apiVersions: ["v1"]
+        operations: ["*"]
         resources: ["pods"]
   validations:
     - expression: "!has(object.spec.hostNetwork) || object.spec.hostNetwork != true"
