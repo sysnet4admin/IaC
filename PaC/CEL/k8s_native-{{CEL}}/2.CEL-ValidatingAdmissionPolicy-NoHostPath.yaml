@@ -7,7 +7,7 @@ spec:
     resourceRules:
     - apiGroups: ["*"]
       apiVersions: ["*"]
-      operations: ["*"]
+      operations: ["CREATE","UPDATE"]
       resources: ["daemonsets","deployments"]
   validations:
     - expression: "!has(object.spec.template.spec.volumes) || 
