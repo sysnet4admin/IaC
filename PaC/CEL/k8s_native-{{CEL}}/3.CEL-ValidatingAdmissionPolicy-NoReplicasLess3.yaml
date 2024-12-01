@@ -7,7 +7,7 @@ spec:
     resourceRules:
     - apiGroups: ["apps"]
       apiVersions: ["v1"]
-      operations: ["*"]
+      operations: ["CREATE","UPDATE"]
       resources: ["deployments"]
   validations:
     - expression: "!has(object.spec.replicas) || 

@@ -12,6 +12,9 @@ spec:
           kinds:
           - DaemonSet
           - Deployment 
+          operations:
+          - CREATE
+          - UPDATE
     validate:
       cel:
         expressions:

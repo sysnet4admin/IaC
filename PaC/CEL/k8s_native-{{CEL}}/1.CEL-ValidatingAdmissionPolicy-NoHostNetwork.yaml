@@ -7,7 +7,7 @@ spec:
     resourceRules:
     - apiGroups: [""]
       apiVersions: ["v1"]
-      operations: ["*"]
+      operations: ["CREATE","UPDATE"]
       resources: ["pods"]
   validations:
     - expression: "!has(object.spec.hostNetwork) || 
