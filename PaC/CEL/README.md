@@ -1,7 +1,14 @@
 ## Policy as Code
 (inspired by https://github.com/SeongJuMoon/policy-as-code-for-k8s)
 
-이 리포지터리에서는 Policy as Code를 이해하기 위한 목적입니다. </br>
-1.gatekeeper, kyverno 그리고 CEL을 배포합니다. </br>
-2.파드에서 hostnetwork,hostPath,replicas에 대한 사용을 제한합니다. </br>
-3.`<Item> is not allowed for`를 확인합니다. </br>
+This repo provide PaC Pratice for KubeCon India 2024 
+Attendee could run each of folder for your own testing purpose. 
+
+```
+$ ls -1    
+README.md
+gatekeeper-{{Rego,CEL}} <<< OPA,        it provided Rego & CEL
+k8s_native-{{CEL}}      <<< k8s native, it provided CEL only 
+kyverno-{{Yaml,CEL}}    <<< kyverno   , it provided Yaml & CEL 
+sample-apps             <<< After deploying each of PaC, you could use this sample app for testing purpose. 
+```
