@@ -1,6 +1,6 @@
 FROM nginx:1.27.3-alpine-slim
 
-LABEL Name=hello Version=v1
+LABEL Name=kubecon-eu Version=v1 
 
 RUN apk add --no-cache bash \ 
     && rm -rf /etc/nginx/conf.d/default.conf
