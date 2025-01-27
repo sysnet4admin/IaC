@@ -1,7 +1,7 @@
 
 # Switch base-img 
-#ARG BASE_IMAGE=nginx:1.27.3-alpine-slim
-ARG BASE_IMAGE=nginx:1.26.0-alpine-slim
+ARG BASE_IMAGE=nginx:1.27.3-alpine-slim
+#ARG BASE_IMAGE=nginx:1.26.0-alpine-slim
 
 FROM ${BASE_IMAGE} 
 
