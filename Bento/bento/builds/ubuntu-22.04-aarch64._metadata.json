@@ -1,0 +1,24 @@
+{
+  "name": "ubuntu-22.04",
+  "version": "202506.20.0",
+  "arch": "aarch64",
+  "build_timestamp": "20250620062228",
+  "packer_command": "packer build -timestamp-ui -force -var cpus=4 -only=virtualbox-iso.vm -var-file=ubuntu-22.04-aarch64.pkrvars.hcl ../../packer_templates",
+  "git_revision": "5ed0555296ac1173bcba3589a11f61f9caf50165",
+  "git_status": "dirty",
+  "box_basename": "ubuntu-22.04",
+  "template": "ubuntu-22.04-aarch64",
+  "packer": "Packer v1.13.1",
+  "providers": [
+    {
+      "name": "virtualbox",
+      "version": "7.1.10",
+      "file": "ubuntu-22.04-aarch64.virtualbox.box",
+      "checksum_type": "sha256",
+      "checksum": "cf68428a9623ae3fdb41227752a6dbc3a11226fac34a35196eb33fcb5ab3e9d1",
+      "size": "835 MB",
+      "build_time": 553,
+      "build_cpus": "4"
+    }
+  ]
+}
