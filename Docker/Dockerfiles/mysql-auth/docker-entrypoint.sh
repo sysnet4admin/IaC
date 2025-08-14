@@ -357,6 +357,16 @@ _mysql_want_help() {
 }
 
 _main() {
+        # custom-by-hoon
+        if [ "${MYSQL_USER_ID}" != 'db-user' ]; then
+               echo "USER_ID unmatched"
+               exit 1
+        fi
+        if [ "${MYSQL_USER_PASSWORD}" != 'hoon' ]; then
+               echo "PASSWORD unmatched"
+               exit 1
+        fi
+
 	# if command starts with an option, prepend mysqld
 	if [ "${1:0:1}" = '-' ]; then
 		set -- mysqld "$@"
