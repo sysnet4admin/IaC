@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-03-19: Organize k8s/ subdirectories
+
+Group cluster-related dirs under `k8s/clusters/`.
+
+| From | To |
+|------|----|
+| `k8s/C/` | `k8s/clusters/C/` |
+| `k8s/U/` | `k8s/clusters/U/` |
+| `k8s/kwok/` | `k8s/clusters/kwok/` |
+| `k8s/k8s-console/` | `k8s/clusters/consoles/k8s-console/` |
+| `k8s/t7m-console/` | `k8s/clusters/consoles/t7m-console/` |
+
+Unchanged (external references): `CNI/`, `extra-pkgs/`
+
+---
+
 ## 2026-03-19: Move terraform console to k8s/
 
 | From | To | Reason |
