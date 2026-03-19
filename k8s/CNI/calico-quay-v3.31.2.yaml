@@ -7137,7 +7137,7 @@ spec:
         # Refresh CNI kubeconfig with a static non-expiring token on every pod start.
         # This prevents CNI authentication failures after long VM downtime.
         - name: refresh-cni-token
-          image: quay.io/calico/cni:v3.31.2
+          image: quay.io/calico/node:v3.31.2
           imagePullPolicy: IfNotPresent
           command: ["/bin/sh", "-c"]
           args:
