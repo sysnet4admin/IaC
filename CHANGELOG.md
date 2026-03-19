@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-03-19: Move terraform console to k8s/
+
+| From | To | Reason |
+|------|----|--------|
+| `terraform/t7m-Console/` | `k8s/t7m-console/` | Vagrant-based tool console, same pattern as `k8s/k8s-console/` |
+
+Removed `terraform/` directory (empty after move).
+
+---
+
 ## 2026-03-19: Repository folder restructuring
 
 Reorganize top-level directories from 20 to 12 by grouping related components.
