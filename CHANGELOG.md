@@ -1,5 +1,62 @@
 # Changelog
 
+## 2026-03-19: Repository folder restructuring
+
+Reorganize top-level directories from 20 to 12 by grouping related components.
+
+### Moved directories
+
+| From | To | Reason |
+|------|----|--------|
+| `manifests/*` | `k8s/manifests/` | K8s manifests belong under k8s |
+| `Cloud-Native/Samples/` | `k8s/service-mesh/Samples/` | Istio samples → service-mesh under k8s |
+| `Argo/argo-cd/` | `cicd/argo-cd/` | CI/CD consolidation |
+| `GitOps/` | `cicd/gitops/` | CI/CD consolidation |
+| `Jenkins/dev-to-prod/` | `cicd/jenkins/` | CI/CD consolidation |
+| `PaC/` | `security/pac/` | Security consolidation |
+| `Keycloak/` | `security/keycloak/` | Security consolidation |
+| `Prometheus/` | `monitoring/prometheus/` | Monitoring consolidation |
+| `nGrinder/` | `monitoring/ngrinder/` | Monitoring consolidation |
+| `n8n/` | `automation/n8n/` | Automation category |
+| `GCP/` | `cloud/gcp/` | Cloud provider category |
+| `Docker/` | `docker/` | Lowercase normalization |
+| `Bento/` | `bento/` | Lowercase normalization |
+| `Terraform/` | `terraform/` | Lowercase normalization |
+| `NXOSv/` | `nxosv/` | Lowercase normalization |
+
+### Removed directories
+
+| Directory | Reason |
+|-----------|--------|
+| `manifests/` | Empty after absorption into `k8s/manifests/` |
+| `Cloud-Native/` | Empty after move |
+| `Argo/` | Empty after move |
+| `Jenkins/` | Empty after move |
+
+### Unchanged
+
+| Directory | Reason |
+|-----------|--------|
+| `k8s/` | Core — stays at root |
+| `AIOps/` | To be reorganized later |
+| `tools/` | Already well-placed |
+
+### External repositories updated
+
+| Repository | File | Change |
+|------------|------|--------|
+| `talks` | `KubeCon/2023-NA/DEMO/README.md` | `Keycloak/` → `security/keycloak/` link |
+| `_Book_k8sInfra` | `app/A.kubectl-more/bash-completion.sh`, `k8s_rc.sh` | Comment URL path updated |
+| `_Book_Claude-Code` | `week1/Thu/app/A.kubectl-more/bash-completion.sh`, `k8s_rc.sh` | Comment URL path updated |
+
+### Rollback
+
+```bash
+git revert <commit-hash>
+```
+
+---
+
 ## 2026-03-19: Move bash-completion.sh to tools/
 
 Move kubectl helper script from `manifests/` to `tools/` where other shell utilities reside.
