@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-03-19: Move bash-completion.sh to tools/
+
+Move kubectl helper script from `manifests/` to `tools/` where other shell utilities reside.
+
+| From | To |
+|------|----|
+| `manifests/bash-completion.sh` | `tools/bash-completion.sh` |
+
+Usage comment URL updated: `master/manifests/` → `main/tools/`
+
+External repos with copies (comment-only reference, no runtime impact):
+- `_Book_k8sInfra`: `app/A.kubectl-more/bash-completion.sh`
+- `_Book_Claude-Code`: `week1/Thu/app/A.kubectl-more/bash-completion.sh`
+
+---
+
 ## 2026-03-19: CNI manifests consolidation
 
 Consolidate scattered Calico CNI manifests into `k8s/CNI/archived/`.
