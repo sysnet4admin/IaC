@@ -36,6 +36,17 @@ metadata:
   name: calico-cni-plugin
   namespace: kube-system
 ---
+# Static non-expiring token for calico-cni-plugin.
+# Prevents CNI authentication failures after long VM downtime.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: calico-cni-plugin-token
+  namespace: kube-system
+  annotations:
+    kubernetes.io/service-account.name: calico-cni-plugin
+type: kubernetes.io/service-account-token
+---
 # Source: calico/templates/calico-config.yaml
 # This ConfigMap is used to configure a self-hosted Calico installation.
 kind: ConfigMap
@@ -7123,6 +7134,43 @@ spec:
               name: cni-net-dir
           securityContext:
             privileged: true
+        # Refresh CNI kubeconfig with a static non-expiring token on every pod start.
+        # This prevents CNI authentication failures after long VM downtime.
+        - name: refresh-cni-token
+          image: quay.io/calico/cni:v3.31.2
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              TOKEN=$(cat /cni-token/token)
+              cp /cni-token/ca.crt /host/etc/cni/net.d/calico-ca.crt
+              cat > /host/etc/cni/net.d/calico-kubeconfig <<EOF
+              apiVersion: v1
+              kind: Config
+              clusters:
+              - name: local
+                cluster:
+                  server: https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}
+                  certificate-authority: /etc/cni/net.d/calico-ca.crt
+              users:
+              - name: calico-cni
+                user:
+                  token: ${TOKEN}
+              contexts:
+              - name: calico-context
+                context:
+                  cluster: local
+                  user: calico-cni
+              current-context: calico-context
+              EOF
+              chmod 600 /host/etc/cni/net.d/calico-kubeconfig
+              echo "CNI kubeconfig refreshed with static non-expiring token."
+          volumeMounts:
+            - mountPath: /host/etc/cni/net.d
+              name: cni-net-dir
+            - mountPath: /cni-token
+              name: calico-cni-token
+              readOnly: true
         # This init container mounts the necessary filesystems needed by the BPF data plane
         # i.e. bpf at /sys/fs/bpf and cgroup2 at /run/calico/cgroup. It also configures the initial
         # networking to allow communication with the API Server. Calico-node initialization is executed
@@ -7335,6 +7383,10 @@ spec:
           hostPath:
             type: DirectoryOrCreate
             path: /var/run/nodeagent
+        # Static non-expiring token for CNI plugin authentication.
+        - name: calico-cni-token
+          secret:
+            secretName: calico-cni-plugin-token
 ---
 # Source: calico/templates/calico-kube-controllers.yaml
 # See https://github.com/projectcalico/kube-controllers
