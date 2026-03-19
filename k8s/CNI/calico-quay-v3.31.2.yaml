@@ -36,15 +36,17 @@ metadata:
   name: calico-cni-plugin
   namespace: kube-system
 ---
-# Static non-expiring token for calico-cni-plugin.
-# Prevents CNI authentication failures after long VM downtime.
+# Static non-expiring token for calico-node.
+# When VMs resume after long suspend, the projected SA token (3607s) is expired,
+# preventing calico-node from calling TokenRequest API to refresh the CNI token.
+# This static token has no expiration, ensuring calico-node can always authenticate.
 apiVersion: v1
 kind: Secret
 metadata:
-  name: calico-cni-plugin-token
+  name: calico-node-token
   namespace: kube-system
   annotations:
-    kubernetes.io/service-account.name: calico-cni-plugin
+    kubernetes.io/service-account.name: calico-node
 type: kubernetes.io/service-account-token
 ---
 # Source: calico/templates/calico-config.yaml
@@ -7055,6 +7057,7 @@ spec:
         - effect: NoExecute
           operator: Exists
       serviceAccountName: calico-node
+      automountServiceAccountToken: false
       securityContext:
         seccompProfile:
           type: RuntimeDefault
@@ -7090,6 +7093,9 @@ spec:
               name: host-local-net-dir
             - mountPath: /host/opt/cni/bin
               name: cni-bin-dir
+            - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+              name: calico-node-token
+              readOnly: true
           securityContext:
             privileged: true
         # This container installs the CNI binaries
@@ -7132,6 +7138,9 @@ spec:
               name: cni-bin-dir
             - mountPath: /host/etc/cni/net.d
               name: cni-net-dir
+            - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+              name: calico-node-token
+              readOnly: true
           securityContext:
             privileged: true
         # This init container mounts the necessary filesystems needed by the BPF data plane
@@ -7158,57 +7167,12 @@ spec:
             - mountPath: /nodeproc
               name: nodeproc
               readOnly: true
+            - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+              name: calico-node-token
+              readOnly: true
           securityContext:
             privileged: true
       containers:
-        # Sidecar: Periodically writes CNI kubeconfig with a static non-expiring token.
-        # Prevents CNI auth failures when VM resumes after long suspend (token expired
-        # while calico-node was frozen). Runs every 5 minutes as a safety net.
-        # Normal operation: calico-node overwrites with 24h token every ~6h (fine).
-        # After VM resume: calico-node's refresh fails (expired projected SA token),
-        # but this sidecar restores a valid kubeconfig within 5 minutes.
-        - name: cni-token-guardian
-          image: quay.io/calico/node:v3.31.2
-          imagePullPolicy: IfNotPresent
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              TOKEN=$(cat /cni-token/token)
-              cp /cni-token/ca.crt /host/etc/cni/net.d/calico-ca.crt
-              while true; do
-                cat > /host/etc/cni/net.d/calico-kubeconfig <<EOF
-              apiVersion: v1
-              kind: Config
-              clusters:
-              - name: local
-                cluster:
-                  server: https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}
-                  certificate-authority: /etc/cni/net.d/calico-ca.crt
-              users:
-              - name: calico-cni
-                user:
-                  token: ${TOKEN}
-              contexts:
-              - name: calico-context
-                context:
-                  cluster: local
-                  user: calico-cni
-              current-context: calico-context
-              EOF
-                sleep 300
-              done
-          resources:
-            requests:
-              cpu: 10m
-              memory: 16Mi
-            limits:
-              memory: 32Mi
-          volumeMounts:
-            - mountPath: /host/etc/cni/net.d
-              name: cni-net-dir
-            - mountPath: /cni-token
-              name: calico-cni-token
-              readOnly: true
         # Runs calico-node container on each Kubernetes node. This
         # container programs network policy and routes on each
         # host.
@@ -7342,6 +7306,9 @@ spec:
             - name: cni-log-dir
               mountPath: /var/log/calico/cni
               readOnly: true
+            - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+              name: calico-node-token
+              readOnly: true
       volumes:
         # Used by calico-node.
         - name: lib-modules
@@ -7394,10 +7361,11 @@ spec:
           hostPath:
             type: DirectoryOrCreate
             path: /var/run/nodeagent
-        # Static non-expiring token for CNI plugin authentication.
-        - name: calico-cni-token
+        # Static non-expiring SA token for calico-node.
+        # Replaces projected token (3607s expiry) to survive long VM suspend.
+        - name: calico-node-token
           secret:
-            secretName: calico-cni-plugin-token
+            secretName: calico-node-token
 ---
 # Source: calico/templates/calico-kube-controllers.yaml
 # See https://github.com/projectcalico/kube-controllers
