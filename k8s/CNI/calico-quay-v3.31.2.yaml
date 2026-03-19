@@ -7163,7 +7163,6 @@ spec:
                   user: calico-cni
               current-context: calico-context
               EOF
-              chmod 600 /host/etc/cni/net.d/calico-kubeconfig
               echo "CNI kubeconfig refreshed with static non-expiring token."
           volumeMounts:
             - mountPath: /host/etc/cni/net.d
