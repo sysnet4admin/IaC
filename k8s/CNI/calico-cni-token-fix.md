@@ -1,79 +1,50 @@
 # Calico CNI Token Expiration Fix
 
-## 문제
+## 왜 이 수정이 필요한가
 
-VM을 한동안 사용하지 않다가 다시 켜면(호스트 노트북 닫기 → 며칠 후 열기) calico-node가 정상 동작하지 않아 새 Pod 배포가 불가능함.
-
-### 근본 원인
+호스트 노트북을 닫고 며칠 후 다시 열면, VirtualBox VM은 reboot 없이 시간만 점프한다.
+이때 calico-node Pod도 재시작 없이 그대로 resume 되는데, calico-node가 API 서버와 통신할 때 사용하는 projected SA 토큰(유효기간 3607초=1시간)이 이미 만료된 상태다.
 
 ```
-호스트 suspend → 며칠 경과 → 호스트 resume
-    → VirtualBox VM 시간만 점프 (VM reboot 아님, Pod 재시작 안 됨)
-    → calico-node의 projected SA 토큰 (3607초=1시간) 만료
-    → calico-node가 TokenRequest API 호출 불가 (401)
-    → /etc/cni/net.d/calico-kubeconfig의 24h CNI 토큰 갱신 실패
-    → CNI 플러그인 인증 실패 → 새 Pod 배포 불가
+호스트 suspend → 며칠 경과 → resume
+    → calico-node의 projected SA 토큰 만료 (3607초)
+    → TokenRequest API 호출 실패 (401)
+    → CNI kubeconfig의 24h 토큰 갱신 불가
+    → 새 Pod 배포 불가
 ```
 
-- calico-node의 CNI 토큰 유효기간(24h)은 `token_watch.go`에 하드코딩 (`defaultCNITokenValiditySeconds = 86400`)
-- 외부에서 변경 가능한 설정 없음
-- 정상 시 calico-node가 ~6시간마다 자동 갱신하지만, 자체 SA 토큰이 만료되면 갱신 불가
+calico-node는 정상 시 ~6시간마다 CNI 토큰을 갱신하지만, 자체 SA 토큰이 만료되면 갱신 자체가 불가능하다.
+CNI 토큰 유효기간(24h)은 `token_watch.go`에 하드코딩(`defaultCNITokenValiditySeconds = 86400`)되어 있고 외부에서 변경할 수 없다.
 
-### 참고 소스
-
+참고:
 - https://raw.githubusercontent.com/projectcalico/calico/v3.31.2/node/pkg/cni/token_watch.go
 - https://github.com/projectcalico/calico/issues/8368
 
-## 검토한 방안
+## 왜 이 방식으로 구현했는가
 
-| 방안 | 설명 | 판정 | 사유 |
-|------|------|:----:|------|
-| `CNI_TOKEN_REFRESH_INTERVAL` 단축 | 갱신 주기를 줄임 | X | 기본값이 이미 5분. 갱신 주기가 아닌 인증 실패가 문제 |
-| Static Secret + `chattr +i` | 영구 토큰 + 파일 불변 | X | calico/node 이미지에 chattr 없음, 로그 스팸 발생 |
-| `bitnami/kubectl` initContainer | 외부 이미지로 `kubectl create token --duration=87600h` | X | 외부 이미지 의존, Pod 재시작 시에만 동작 (VM resume에 무효) |
-| initContainer (calico/cni) | initContainer에서 영구 토큰으로 kubeconfig 작성 | X | calico/cni는 scratch 기반으로 `/bin/sh` 없어 실행 불가 |
-| initContainer (calico/node) | 위와 동일하되 calico/node 이미지 사용 | X | shell은 있지만 VM resume 시 Pod 재시작 안 되므로 실행 안 됨 |
-| Sidecar (cni-token-guardian) | 5분마다 영구 토큰으로 kubeconfig 덮어씀 | △ | 동작하지만 노드당 추가 컨테이너 리소스 소비 |
-| **calico-node SA 영구 토큰** | calico-node 자체 SA 토큰을 영구로 변경 | **O** | 근본 원인 해결, 추가 리소스 없음 |
+문제의 근본 원인은 calico-node의 **자체 SA 토큰 만료**이다. CNI 토큰이 아니라 calico-node가 API 서버에 인증하는 토큰이 문제다.
 
-### 참고: calico/cni vs calico/node 이미지
+`kubernetes.io/service-account-token` 타입 Secret은 projected 토큰과 달리 `exp` 필드가 없어 만료되지 않는다. 이 Secret을 calico-node Pod에 마운트하면, VM이 며칠간 suspend 되어도 calico-node가 즉시 API 서버에 인증 가능하고, 기존 CNI 토큰 갱신 메커니즘이 정상 동작한다.
 
-| 이미지 | 기반 | /bin/sh | 용도 |
-|--------|------|:-------:|------|
-| `calico/cni` | scratch | 없음 | CNI 바이너리만 포함, shell 실행 불가 |
-| `calico/node` | busybox | 있음 (단, chmod 등 일부 명령 없음) | calico-node 데몬 + busybox 유틸리티 |
+다른 방안을 채택하지 않은 이유:
 
-### Sidecar vs SA 영구 토큰 비교
+| 방안 | 불채택 사유 |
+|------|------------|
+| initContainer로 영구 토큰 kubeconfig 작성 | VM resume 시 Pod 재시작 안 됨 → 실행 안 됨 |
+| Sidecar로 주기적 kubeconfig 덮어쓰기 | 동작하지만 노드당 추가 컨테이너 리소스 소비 |
+| `CNI_TOKEN_REFRESH_INTERVAL` 단축 | 기본값이 이미 5분. 갱신 주기가 아닌 인증 실패가 문제 |
+| `chattr +i`로 kubeconfig 보호 | calico/node 이미지에 chattr 없음, 로그 스팸 |
 
-| 항목 | Sidecar | SA 영구 토큰 |
-|------|:---:|:---:|
-| 복구 지연 | 최대 5분 | 즉시 (0초) |
-| 원리 | 증상 우회 (kubeconfig 직접 덮어씀) | 근본 원인 해결 (calico-node 인증 보장) |
-| YAML 변경량 | 적음 (container 1개 + volume 1개) | 많음 (Secret + automount + volumeMount 4개소) |
-| 추가 리소스 | 노드당 ~10m CPU, 16Mi 메모리 | 없음 |
-| calico 업그레이드 시 | 수정 없음 | initContainer 추가 시 volumeMount도 추가 필요 |
-| calico-node 내부 갱신 의존 | 독립적 | 의존함 (갱신 고루틴 자체가 죽으면 안 됨) |
-| 보안 | calico-cni-plugin SA 영구 토큰 (제한 권한) | calico-node SA 영구 토큰 (광범위 권한) |
+참고: initContainer/sidecar 시도 시 `calico/cni` 이미지는 scratch 기반으로 `/bin/sh`가 없어 shell 실행 불가. `calico/node`는 busybox 포함이나 `chmod` 등 일부 명령 없음.
 
-**결정: SA 영구 토큰** - 리소스가 제한적인 랩 환경에서 추가 컨테이너 비용이 문제됨.
+## 원본 YAML 대비 변경 내용
 
-## 적용한 방안: calico-node SA 영구 토큰
+대상 파일: `calico-quay-v3.31.2.yaml`
 
-### 원리
+### 1. calico-node-token Secret 추가
 
-```
-VM resume 후:
-    calico-node의 SA 토큰 = kubernetes.io/service-account-token (만료 없음)
-    → TokenRequest API 호출 성공
-    → 24h CNI 토큰 즉시 갱신
-    → CNI 정상 동작
-```
+ServiceAccount 정의 뒤에 추가.
 
-projected SA 토큰(1시간 만료) 대신 Static Secret(만료 없음)을 사용하여, VM이 며칠간 suspend 되었다가 resume 되어도 calico-node가 즉시 API 서버와 통신 가능.
-
-### 원본 YAML 대비 변경 사항 (`calico-quay-v3.31.2.yaml`)
-
-**1. calico-node SA용 Static Secret 추가** (ServiceAccount 정의 뒤)
 ```yaml
 apiVersion: v1
 kind: Secret
@@ -85,65 +56,52 @@ metadata:
 type: kubernetes.io/service-account-token
 ```
 
-**2. DaemonSet pod spec에 `automountServiceAccountToken: false` 추가**
+### 2. DaemonSet pod spec에 automountServiceAccountToken: false
+
+projected 토큰 자동 마운트를 비활성화하고, 위 Static Secret을 수동 마운트한다.
+
 ```yaml
 serviceAccountName: calico-node
 automountServiceAccountToken: false   # 추가
 ```
 
-**3. 모든 initContainer(3개) + container(1개)에 volumeMount 추가**
+### 3. 모든 initContainer + container에 volumeMount 추가
 
-대상: `upgrade-ipam`, `install-cni`, `ebpf-bootstrap`, `calico-node`
+**대상 4개소**: `upgrade-ipam`, `install-cni`, `ebpf-bootstrap`, `calico-node`
+
+각 컨테이너의 `volumeMounts:` 끝에 추가:
 ```yaml
-volumeMounts:
-  # ... 기존 마운트 유지 ...
-  - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
-    name: calico-node-token
-    readOnly: true
+- mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+  name: calico-node-token
+  readOnly: true
 ```
 
-**4. volumes에 calico-node-token 추가**
+### 4. volumes에 calico-node-token 추가
+
+`volumes:` 섹션 끝에 추가:
 ```yaml
-volumes:
-  # ... 기존 볼륨 유지 ...
-  - name: calico-node-token
-    secret:
-      secretName: calico-node-token
+- name: calico-node-token
+  secret:
+    secretName: calico-node-token
 ```
 
-sidecar/initContainer 추가 없음. 원본 calico YAML의 컨테이너 구성을 변경하지 않음.
+## 버전 업그레이드 시 체크리스트
 
-### 커밋 이력
+calico 버전을 올릴 때 아래 항목을 반드시 확인한다.
 
-| 커밋 | 내용 | 비고 |
-|------|------|------|
-| `3a8f538` | calico-cni-plugin-token Secret + refresh-cni-token initContainer 추가 | 중간 시도 |
-| `4c6f17e` | initContainer 이미지 calico/cni → calico/node (shell 필요) | 중간 수정 |
-| `7f90679` | initContainer에서 chmod 제거 (busybox에 없음) | 중간 수정 |
-| `61768e2` | initContainer → sidecar(cni-token-guardian)로 교체 | 중간 시도 |
-| **`775f6c5`** | **sidecar 제거, calico-node SA 영구 토큰으로 최종 교체** | **최종** |
+### 반드시 적용할 것
 
-## 적용 대상
+- [ ] `calico-node-token` Secret이 YAML에 포함되어 있는가
+- [ ] DaemonSet에 `automountServiceAccountToken: false`가 설정되어 있는가
+- [ ] **모든 initContainer**에 `calico-node-token` volumeMount가 있는가
+  - 새 버전에서 initContainer가 추가/변경될 수 있음 → 누락 주의
+- [ ] `calico-node` 메인 container에 `calico-node-token` volumeMount가 있는가
+- [ ] `volumes`에 `calico-node-token` 항목이 있는가
 
-- 파일: `calico-quay-v3.31.2.yaml`
-- 사용처: https://github.com/sysnet4admin/SSF/blob/main/Module-1/vanilla-k8s/controlplane_node.sh
-- 배포 방식: `kubectl apply -f $CNI_ADDR/calico-quay-v3.31.2.yaml`
+### 확인할 것
 
-## 검증 결과 (2026-03-19)
-
-SSF vanilla-k8s (`vagrant up`) 배포 후 확인:
-
-| 항목 | 결과 |
-|------|------|
-| 전체 노드 Ready | CP + w1 + w2 + w3 (4/4) |
-| calico-node 전 노드 Running | 4/4 (READY 1/1, sidecar 없음) |
-| **calico-node SA 토큰** | **`exp` 필드 없음 → 만료 없음 (영구)** |
-| CNI kubeconfig 토큰 | calico-node가 정상 갱신한 24h 토큰 (calico-cni-plugin SA) |
-| busybox 배포 | 성공 (172.16.103.129, w2-k8s) |
-| DNS | `kubernetes.default.svc.cluster.local` → `10.96.0.1` 정상 |
-
-## 미검증 (주말 테스트 예정)
-
-- [ ] 호스트 suspend → 며칠 경과 → resume 후 새 Pod 배포 정상 여부
-- [ ] resume 후 calico-node가 CNI 토큰을 즉시 갱신하는지 확인
-- [ ] resume 후 calico-node 로그에 401/403 에러 없는지 확인
+- [ ] 새 버전의 `token_watch.go`에서 토큰 유효기간을 외부 설정할 수 있게 되었는지 확인
+  - 가능해졌다면 이 수정 전체가 불필요해질 수 있음
+- [ ] 새 버전에서 initContainer 목록이 변경되었는지 확인 (추가/제거/이름변경)
+- [ ] ServiceAccount 이름이 `calico-node`에서 변경되었는지 확인
+  - 변경 시 Secret의 `kubernetes.io/service-account.name` annotation도 수정 필요
