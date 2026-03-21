@@ -7164,7 +7164,7 @@ spec:
         # Combined with cni-net-dir being read-only in the main container, this ensures
         # the CNI plugin always has a valid token regardless of how long the host was suspended.
         - name: patch-cni-kubeconfig
-          image: busybox:1.37
+          image: quay.io/calico/node:v3.31.2
           imagePullPolicy: IfNotPresent
           command: ["/bin/sh", "-c"]
           args:
