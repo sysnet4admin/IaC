@@ -87,7 +87,7 @@ install-cni가 작성한 calico-kubeconfig의 24h 토큰을 static 토큰으로 
 
 ```yaml
         - name: patch-cni-kubeconfig
-          image: busybox:1.37
+          image: quay.io/calico/node:v3.31.2
           imagePullPolicy: IfNotPresent
           command: ["/bin/sh", "-c"]
           args:
