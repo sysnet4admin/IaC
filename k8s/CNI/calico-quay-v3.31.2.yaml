@@ -49,6 +49,22 @@ metadata:
     kubernetes.io/service-account.name: calico-node
 type: kubernetes.io/service-account-token
 ---
+# Static non-expiring token for calico-cni-plugin.
+# install-cni writes calico-kubeconfig with a 24h TokenRequest token (hardcoded in
+# token_watch.go: defaultCNITokenValiditySeconds=86400). If the host is suspended
+# longer than 24h, this token expires and new pods cannot be created.
+# The patch-cni-kubeconfig init container replaces this token with the static one,
+# and cni-net-dir is mounted read-only in the main container to prevent token_watch.go
+# from overwriting it with a new expiring token.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: calico-cni-plugin-token
+  namespace: kube-system
+  annotations:
+    kubernetes.io/service-account.name: calico-cni-plugin
+type: kubernetes.io/service-account-token
+---
 # Source: calico/templates/calico-config.yaml
 # This ConfigMap is used to configure a self-hosted Calico installation.
 kind: ConfigMap
@@ -7143,6 +7159,28 @@ spec:
               readOnly: true
           securityContext:
             privileged: true
+        # This init container patches calico-kubeconfig with a static (non-expiring) token
+        # for calico-cni-plugin, replacing the 24h TokenRequest token written by install-cni.
+        # Combined with cni-net-dir being read-only in the main container, this ensures
+        # the CNI plugin always has a valid token regardless of how long the host was suspended.
+        - name: patch-cni-kubeconfig
+          image: busybox:1.37
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              STATIC_TOKEN=$(cat /var/run/secrets/calico-cni-plugin/token)
+              sed -i "s|    token:.*|    token: $STATIC_TOKEN|" /host/etc/cni/net.d/calico-kubeconfig
+              sed -i 's|server: https://\[\([0-9.]*\)\]:\([0-9]*\)|server: https://\1:\2|' /host/etc/cni/net.d/calico-kubeconfig
+              echo "patch-cni-kubeconfig: replaced token with static calico-cni-plugin token (no expiry), fixed server URL format"
+          volumeMounts:
+            - mountPath: /host/etc/cni/net.d
+              name: cni-net-dir
+            - mountPath: /var/run/secrets/calico-cni-plugin
+              name: calico-cni-plugin-token
+              readOnly: true
+          securityContext:
+            privileged: true
         # This init container mounts the necessary filesystems needed by the BPF data plane
         # i.e. bpf at /sys/fs/bpf and cgroup2 at /run/calico/cgroup. It also configures the initial
         # networking to allow communication with the API Server. Calico-node initialization is executed
@@ -7281,10 +7319,12 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 10
           volumeMounts:
-            # For maintaining CNI plugin API credentials.
+            # Read-only: calico-kubeconfig is patched with a static token by patch-cni-kubeconfig
+            # init container. Preventing writes here stops token_watch.go from overwriting
+            # the static token with a new 24h-expiring TokenRequest token.
             - mountPath: /host/etc/cni/net.d
               name: cni-net-dir
-              readOnly: false
+              readOnly: true
             - mountPath: /lib/modules
               name: lib-modules
               readOnly: true
@@ -7366,6 +7406,12 @@ spec:
         - name: calico-node-token
           secret:
             secretName: calico-node-token
+        # Static non-expiring SA token for calico-cni-plugin.
+        # Used by patch-cni-kubeconfig init container to write a permanent token
+        # into calico-kubeconfig, replacing the 24h TokenRequest token from install-cni.
+        - name: calico-cni-plugin-token
+          secret:
+            secretName: calico-cni-plugin-token
 ---
 # Source: calico/templates/calico-kube-controllers.yaml
 # See https://github.com/projectcalico/kube-controllers
