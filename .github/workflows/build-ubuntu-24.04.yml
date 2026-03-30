@@ -14,43 +14,19 @@ on:
 
 env:
   PACKER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # packer init GitHub API rate limit 방지
-  VIRTUALBOX_VERSION: "7.1.6"
-  VIRTUALBOX_BUILD: "168469"
 
 jobs:
   build:
-    name: Build (${{ matrix.arch }})
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - arch: x86_64
-            runner: ubuntu-latest
-            iso_url: "https://releases.ubuntu.com/noble/ubuntu-24.04.4-live-server-amd64.iso"
-            iso_checksum: "file:https://releases.ubuntu.com/noble/SHA256SUMS"
-            vbox_pkg: "virtualbox-7.1"          # Debian repo 설치
-            vbox_deb: ""
-
-          # aarch64: VirtualBox는 Linux arm64 host 미지원 → macOS arm64 host(Mac M-series)만 가능
-          # self-hosted runner 등록 필요: https://github.com/sysnet4admin/IaC/settings/actions/runners
-          - arch: aarch64
-            runner: [self-hosted, macOS, arm64]
-            iso_url: "https://cdimage.ubuntu.com/releases/24.04/release/ubuntu-24.04.4-live-server-arm64.iso"
-            iso_checksum: "sha256:9a6ce6d7e66c8abed24d24944570a495caca80b3b0007df02818e13829f27f32"
-            vbox_pkg: ""
-            vbox_deb: ""
-
-    runs-on: ${{ matrix.runner }}
+    name: Build (x86_64)
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ── x86_64: VirtualBox Debian repo 설치 ──────────────────────────────
-      - name: Install VirtualBox (x86_64 via apt)
-        if: matrix.arch == 'x86_64'
+      # KVM과 VirtualBox는 동시에 하드웨어 가상화를 사용할 수 없으므로 KVM 언로드
+      - name: Install VirtualBox
         run: |
-          # KVM과 VirtualBox는 동시에 하드웨어 가상화를 사용할 수 없으므로 KVM 언로드
           sudo rmmod kvm_amd || sudo rmmod kvm_intel || true
           sudo rmmod kvm || true
 
@@ -63,15 +39,7 @@ jobs:
           sudo apt-get install -y virtualbox-7.1
           sudo modprobe vboxdrv
 
-      # ── aarch64: macOS self-hosted runner에는 VirtualBox가 이미 설치되어 있음 ─
-      # VirtualBox Linux arm64 host 미지원 → macOS(Mac M-series)에서만 빌드 가능
-      - name: Verify VirtualBox (aarch64 macOS)
-        if: matrix.arch == 'aarch64'
-        run: VBoxManage --version
-
-      # ── x86_64: Vagrant 설치 (macOS self-hosted에는 이미 설치됨) ────────────
-      - name: Install Vagrant (x86_64)
-        if: matrix.arch == 'x86_64'
+      - name: Install Vagrant
         run: |
           wget -O- https://apt.releases.hashicorp.com/gpg \
             | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
@@ -81,32 +49,26 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y vagrant
 
-      # ── x86_64: Packer 설치 (macOS self-hosted에는 이미 설치됨) ────────────
-      - name: Setup Packer (x86_64)
-        if: matrix.arch == 'x86_64'
+      - name: Setup Packer
         uses: hashicorp/setup-packer@main
         with:
           version: latest
 
-      # ── 공통: Packer 플러그인 초기화 ──────────────────────────────────────
       - name: Packer Init
         working-directory: bento/bento
         run: packer init packer_templates/
 
-      # ── 공통: VirtualBox 박스 빌드 ────────────────────────────────────────
-      # iso_url / iso_checksum을 matrix에서 override (aarch64 pkrvars는 로컬 경로이므로)
       - name: Build Box
         working-directory: bento/bento
         run: |
           packer build \
             -only=virtualbox-iso.vm \
-            -var "iso_url=${{ matrix.iso_url }}" \
-            -var "iso_checksum=${{ matrix.iso_checksum }}" \
+            -var "iso_url=https://releases.ubuntu.com/noble/ubuntu-24.04.4-live-server-amd64.iso" \
+            -var "iso_checksum=file:https://releases.ubuntu.com/noble/SHA256SUMS" \
             -var "ssh_timeout=60m" \
-            -var-file=os_pkrvars/ubuntu/ubuntu-24.04-${{ matrix.arch }}.pkrvars.hcl \
+            -var-file=os_pkrvars/ubuntu/ubuntu-24.04-x86_64.pkrvars.hcl \
             packer_templates/
 
-      # ── 공통: HCP Service Principal → Vagrant Cloud 토큰 획득 ─────────────
       # Secrets 설정: HCP_CLIENT_ID, HCP_CLIENT_SECRET (IaC repo Settings > Secrets)
       - name: Get HCP Token
         run: |
@@ -118,7 +80,6 @@ jobs:
             | jq -r '.access_token')
           echo "VAGRANT_CLOUD_TOKEN=$TOKEN" >> $GITHUB_ENV
 
-      # ── 공통: Vagrant Cloud(HCP) 업로드 ───────────────────────────────────
       # --force: 동일 버전 재업로드 허용 / --release: 업로드 후 즉시 릴리스
       - name: Upload to Vagrant Cloud
         working-directory: bento/bento
@@ -127,6 +88,6 @@ jobs:
             ${{ github.event.inputs.box_name }} \
             ${{ github.event.inputs.version }} \
             virtualbox \
-            builds/ubuntu-24.04-${{ matrix.arch }}.virtualbox.box \
+            builds/ubuntu-24.04-x86_64.virtualbox.box \
             --release \
             --force
