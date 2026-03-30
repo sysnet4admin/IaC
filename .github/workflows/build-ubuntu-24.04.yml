@@ -31,12 +31,14 @@ jobs:
             vbox_pkg: "virtualbox-7.1"          # Debian repo 설치
             vbox_deb: ""
 
+          # aarch64: VirtualBox는 Linux arm64 host 미지원 → macOS arm64 host(Mac M-series)만 가능
+          # self-hosted runner 등록 필요: https://github.com/sysnet4admin/IaC/settings/actions/runners
           - arch: aarch64
-            runner: ubuntu-24.04-arm
+            runner: [self-hosted, macOS, arm64]
             iso_url: "https://cdimage.ubuntu.com/releases/24.04/release/ubuntu-24.04.4-live-server-arm64.iso"
             iso_checksum: "sha256:9a6ce6d7e66c8abed24d24944570a495caca80b3b0007df02818e13829f27f32"
-            vbox_pkg: ""                         # Debian repo에 arm64 패키지 없음
-            vbox_deb: "virtualbox-7.1_7.1.6-168469~Ubuntu~noble_arm64.deb"  # 직접 다운로드
+            vbox_pkg: ""
+            vbox_deb: ""
 
     runs-on: ${{ matrix.runner }}
 
@@ -61,18 +63,15 @@ jobs:
           sudo apt-get install -y virtualbox-7.1
           sudo modprobe vboxdrv
 
-      # ── aarch64: VirtualBox .deb 직접 다운로드 설치 ───────────────────────
-      - name: Install VirtualBox (aarch64 via deb)
+      # ── aarch64: macOS self-hosted runner에는 VirtualBox가 이미 설치되어 있음 ─
+      # VirtualBox Linux arm64 host 미지원 → macOS(Mac M-series)에서만 빌드 가능
+      - name: Verify VirtualBox (aarch64 macOS)
         if: matrix.arch == 'aarch64'
-        run: |
-          # arm64 Linux용 VirtualBox는 Debian repo 미제공 → 직접 다운로드
-          wget -q "https://download.virtualbox.org/virtualbox/${{ env.VIRTUALBOX_VERSION }}/${{ matrix.vbox_deb }}" \
-            -O /tmp/virtualbox.deb
-          sudo apt-get install -y /tmp/virtualbox.deb
-          sudo modprobe vboxdrv
+        run: VBoxManage --version
 
-      # ── 공통: Vagrant 설치 (HCP 업로드용) ────────────────────────────────
-      - name: Install Vagrant
+      # ── x86_64: Vagrant 설치 (macOS self-hosted에는 이미 설치됨) ────────────
+      - name: Install Vagrant (x86_64)
+        if: matrix.arch == 'x86_64'
         run: |
           wget -O- https://apt.releases.hashicorp.com/gpg \
             | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
@@ -82,8 +81,9 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y vagrant
 
-      # ── 공통: Packer 설치 ────────────────────────────────────────────────
-      - name: Setup Packer
+      # ── x86_64: Packer 설치 (macOS self-hosted에는 이미 설치됨) ────────────
+      - name: Setup Packer (x86_64)
+        if: matrix.arch == 'x86_64'
         uses: hashicorp/setup-packer@main
         with:
           version: latest
@@ -102,6 +102,7 @@ jobs:
             -only=virtualbox-iso.vm \
             -var "iso_url=${{ matrix.iso_url }}" \
             -var "iso_checksum=${{ matrix.iso_checksum }}" \
+            -var "ssh_timeout=60m" \
             -var-file=os_pkrvars/ubuntu/ubuntu-24.04-${{ matrix.arch }}.pkrvars.hcl \
             packer_templates/
 
