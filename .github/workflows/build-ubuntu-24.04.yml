@@ -54,6 +54,14 @@ jobs:
         with:
           version: latest
 
+      # ISO 캐시: 매 실행마다 1.5GB 다운로드 방지 (7일 유효, 10GB/repo 한도)
+      # 캐시 키를 ISO 버전에 고정 → 버전 업 시 키 변경으로 자동 무효화
+      - name: Cache Ubuntu ISO
+        uses: actions/cache@v4
+        with:
+          path: bento/bento/builds/iso/
+          key: ubuntu-24.04.4-amd64-iso
+
       - name: Packer Init
         working-directory: bento/bento
         run: packer init packer_templates/
