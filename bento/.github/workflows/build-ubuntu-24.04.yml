@@ -22,16 +22,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # amd64: GitHub-hosted runner (ubuntu-latest)
           - arch: x86_64
             runner: ubuntu-latest
             iso_url: "https://releases.ubuntu.com/noble/ubuntu-24.04.4-live-server-amd64.iso"
             iso_checksum: "file:https://releases.ubuntu.com/noble/SHA256SUMS"
 
-          # arm64: 로컬 Mac M-series self-hosted runner
-          # GitHub self-hosted runner 등록 필요: https://github.com/sysnet4admin/IaC/settings/actions/runners
           - arch: aarch64
-            runner: [self-hosted, macOS, arm64]
+            runner: ubuntu-24.04-arm  # GitHub-hosted arm64 runner (VirtualBox 7.1 on arm64 Linux)
             iso_url: "https://cdimage.ubuntu.com/releases/24.04/release/ubuntu-24.04.4-live-server-arm64.iso"
             iso_checksum: "sha256:9a6ce6d7e66c8abed24d24944570a495caca80b3b0007df02818e13829f27f32"
 
@@ -41,23 +38,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ── x86_64 전용: VirtualBox 설치 ──────────────────────────────────────
-      - name: Install VirtualBox (x86_64)
-        if: matrix.arch == 'x86_64'
+      # ── 공통: VirtualBox 설치 ──────────────────────────────────────────────
+      - name: Install VirtualBox
         run: |
-          # VirtualBox 공식 repo 추가 (최신 7.1 버전)
           wget -q -O- https://www.virtualbox.org/download/oracle_vbox_2016.asc \
             | sudo gpg --dearmor -o /usr/share/keyrings/oracle-virtualbox-2016.gpg
-          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] \
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] \
             https://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" \
             | sudo tee /etc/apt/sources.list.d/virtualbox.list
           sudo apt-get update -y
           sudo apt-get install -y virtualbox-7.1
           sudo modprobe vboxdrv
 
-      # ── x86_64 전용: Vagrant 설치 (HCP 업로드용) ─────────────────────────
-      - name: Install Vagrant (x86_64)
-        if: matrix.arch == 'x86_64'
+      # ── 공통: Vagrant 설치 (HCP 업로드용) ────────────────────────────────
+      - name: Install Vagrant
         run: |
           wget -O- https://apt.releases.hashicorp.com/gpg \
             | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
@@ -67,9 +61,8 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y vagrant
 
-      # ── x86_64 전용: Packer 설치 (self-hosted Mac에는 이미 설치되어 있음) ─
-      - name: Setup Packer (x86_64)
-        if: matrix.arch == 'x86_64'
+      # ── 공통: Packer 설치 ────────────────────────────────────────────────
+      - name: Setup Packer
         uses: hashicorp/setup-packer@main
         with:
           version: latest
@@ -80,7 +73,7 @@ jobs:
         run: packer init packer_templates/
 
       # ── 공통: VirtualBox 박스 빌드 ────────────────────────────────────────
-      # iso_url / iso_checksum은 matrix에서 override (aarch64 pkrvars는 로컬 경로이므로)
+      # iso_url / iso_checksum을 matrix에서 override (aarch64 pkrvars는 로컬 경로이므로)
       - name: Build Box
         working-directory: bento/bento
         run: |
@@ -104,8 +97,7 @@ jobs:
           echo "VAGRANT_CLOUD_TOKEN=$TOKEN" >> $GITHUB_ENV
 
       # ── 공통: Vagrant Cloud(HCP) 업로드 ───────────────────────────────────
-      # --force: 동일 버전 재업로드 허용
-      # --release: 업로드 후 즉시 릴리스
+      # --force: 동일 버전 재업로드 허용 / --release: 업로드 후 즉시 릴리스
       - name: Upload to Vagrant Cloud
         working-directory: bento/bento
         run: |
