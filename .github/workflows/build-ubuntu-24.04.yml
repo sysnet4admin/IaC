@@ -66,11 +66,9 @@ jobs:
         working-directory: bento/bento
         run: packer init packer_templates/
 
-      # packer HTTP 서버(user-data 제공)가 VirtualBox NAT VM에서 접근 가능하도록 허용
-      # GitHub Actions runner의 iptables가 기본적으로 inbound를 차단하므로 명시적으로 오픈
-      - name: Allow packer HTTP server through firewall
-        run: |
-          sudo iptables -I INPUT -s 10.0.2.0/24 -j ACCEPT
+      # seed ISO(cidata) 생성을 위해 xorriso 필요 (packer cd_files 기능 사용)
+      - name: Install xorriso
+        run: sudo apt-get install -y xorriso
 
       - name: Build Box
         working-directory: bento/bento
