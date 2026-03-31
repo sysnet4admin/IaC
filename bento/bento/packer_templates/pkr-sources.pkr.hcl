@@ -366,6 +366,8 @@ source "virtualbox-iso" "vm" {
   disk_size        = local.disk_size
   floppy_files     = local.floppy_files
   headless         = var.headless
+  # VirtualBox NAT에서 호스트 HTTP 서버 접근 보장: 모든 인터페이스에서 listen
+  http_bind_address = "0.0.0.0"
   http_directory   = local.http_directory
   iso_checksum     = var.iso_checksum
   iso_target_path  = local.iso_target_path
