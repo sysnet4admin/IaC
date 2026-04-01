@@ -58,9 +58,18 @@ source "qemu" "ubuntu24" {
 build {
   sources = ["source.qemu.ubuntu24"]
 
+  # update_ubuntu.sh 마지막에 reboot 명령이 있음 → VM 재부팅으로 SSH 세션 끊김
+  # expect_disconnect = true: 재부팅으로 인한 연결 종료를 정상으로 처리
   provisioner "shell" {
+    script            = "bento/packer_templates/scripts/ubuntu/update_ubuntu.sh"
+    execute_command   = "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'"
+    expect_disconnect = true
+  }
+
+  # 재부팅 후 VM이 완전히 올라올 때까지 대기 후 나머지 스크립트 실행
+  provisioner "shell" {
+    pause_before = "30s"
     scripts = [
-      "bento/packer_templates/scripts/ubuntu/update_ubuntu.sh",
       "bento/packer_templates/scripts/ubuntu/networking_ubuntu.sh",
       "bento/packer_templates/scripts/ubuntu/sudoers_ubuntu.sh",
       "bento/packer_templates/scripts/_common/sshd.sh",
