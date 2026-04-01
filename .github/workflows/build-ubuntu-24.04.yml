@@ -24,20 +24,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # KVM과 VirtualBox는 동시에 하드웨어 가상화를 사용할 수 없으므로 KVM 언로드
-      - name: Install VirtualBox
+      # QEMU/KVM: GitHub Actions에서 네이티브 지원 (VirtualBox 불필요)
+      # VirtualBox는 box 패키징에만 사용하므로 KVM 언로드 불필요
+      - name: Install dependencies
         run: |
-          sudo rmmod kvm_amd || sudo rmmod kvm_intel || true
-          sudo rmmod kvm || true
-
-          wget -q -O- https://www.virtualbox.org/download/oracle_vbox_2016.asc \
-            | sudo gpg --dearmor -o /usr/share/keyrings/oracle-virtualbox-2016.gpg
-          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] \
-            https://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" \
-            | sudo tee /etc/apt/sources.list.d/virtualbox.list
           sudo apt-get update -y
-          sudo apt-get install -y virtualbox-7.1
-          sudo modprobe vboxdrv
+          sudo apt-get install -y qemu-system-x86 qemu-utils ovmf
 
       - name: Install Vagrant
         run: |
@@ -49,37 +41,79 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y vagrant
 
+      - name: Install VirtualBox (패키징 전용)
+        run: |
+          wget -q -O- https://www.virtualbox.org/download/oracle_vbox_2016.asc \
+            | sudo gpg --dearmor -o /usr/share/keyrings/oracle-virtualbox-2016.gpg
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] \
+            https://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" \
+            | sudo tee /etc/apt/sources.list.d/virtualbox.list
+          sudo apt-get update -y
+          sudo apt-get install -y virtualbox-7.1
+          sudo modprobe vboxdrv
+
       - name: Setup Packer
         uses: hashicorp/setup-packer@main
         with:
           version: latest
 
       # ISO 캐시: 매 실행마다 1.5GB 다운로드 방지 (7일 유효, 10GB/repo 한도)
-      # 캐시 키를 ISO 버전에 고정 → 버전 업 시 키 변경으로 자동 무효화
       - name: Cache Ubuntu ISO
         uses: actions/cache@v4
         with:
-          path: bento/bento/builds/iso/
+          path: bento/builds/iso/
           key: ubuntu-24.04.4-amd64-iso
 
       - name: Packer Init
-        working-directory: bento/bento
-        run: packer init packer_templates/
+        working-directory: bento
+        run: packer init ubuntu-24.04-x86_64-qemu.pkr.hcl
 
-      # seed ISO(cidata) 생성을 위해 xorriso 필요 (packer cd_files 기능 사용)
-      - name: Install xorriso
-        run: sudo apt-get install -y xorriso
-
-      - name: Build Box
-        working-directory: bento/bento
+      - name: Build Box (QEMU/KVM)
+        working-directory: bento
         run: |
           packer build \
-            -only=virtualbox-iso.vm \
             -var "iso_url=https://releases.ubuntu.com/noble/ubuntu-24.04.4-live-server-amd64.iso" \
             -var "iso_checksum=file:https://releases.ubuntu.com/noble/SHA256SUMS" \
-            -var "ssh_timeout=90m" \
-            -var-file=os_pkrvars/ubuntu/ubuntu-24.04-x86_64.pkrvars.hcl \
-            packer_templates/
+            -var "ssh_timeout=60m" \
+            ubuntu-24.04-x86_64-qemu.pkr.hcl
+
+      # QEMU qcow2 → VirtualBox VMDK 변환 후 Vagrant box 패키징
+      - name: Convert to VirtualBox box
+        working-directory: bento
+        run: |
+          # qcow2 → vmdk 변환
+          qemu-img convert -f qcow2 -O vmdk \
+            builds/ubuntu-24.04-x86_64-qemu/ubuntu-24.04-amd64.qcow2 \
+            builds/ubuntu-24.04-amd64.vmdk
+
+          # VirtualBox VM 생성 및 디스크 연결
+          VBoxManage createvm --name "ubuntu-24.04-amd64" --ostype Ubuntu_64 --register
+          VBoxManage modifyvm "ubuntu-24.04-amd64" \
+            --memory 1024 --cpus 1 \
+            --nic1 nat \
+            --natpf1 "ssh,tcp,,2222,,22"
+          VBoxManage storagectl "ubuntu-24.04-amd64" \
+            --name "SATA" --add sata --controller IntelAhci
+          VBoxManage storageattach "ubuntu-24.04-amd64" \
+            --storagectl "SATA" --port 0 --device 0 \
+            --type hdd --medium "$(pwd)/builds/ubuntu-24.04-amd64.vmdk"
+
+          # OVA export
+          VBoxManage export "ubuntu-24.04-amd64" \
+            --output builds/ubuntu-24.04-amd64.ova
+
+          # Vagrant box 패키징
+          mkdir -p builds/box_tmp
+          cd builds/box_tmp
+          tar xf ../ubuntu-24.04-amd64.ova
+          cat > Vagrantfile <<'VAGRANTEOF'
+          Vagrant.configure("2") do |config|
+            config.vm.base_mac = "080027000001"
+          end
+          VAGRANTEOF
+          echo '{"provider":"virtualbox"}' > metadata.json
+          tar czf ../ubuntu-24.04-x86_64.virtualbox.box ./*
+          cd ../..
 
       # Secrets 설정: HCP_CLIENT_ID, HCP_CLIENT_SECRET (IaC repo Settings > Secrets)
       - name: Get HCP Token
@@ -94,7 +128,7 @@ jobs:
 
       # --force: 동일 버전 재업로드 허용 / --release: 업로드 후 즉시 릴리스
       - name: Upload to Vagrant Cloud
-        working-directory: bento/bento
+        working-directory: bento
         run: |
           vagrant cloud publish \
             ${{ github.event.inputs.box_name }} \
