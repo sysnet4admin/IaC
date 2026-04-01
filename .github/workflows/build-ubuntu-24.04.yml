@@ -78,7 +78,6 @@ jobs:
             -var "iso_url=https://releases.ubuntu.com/noble/ubuntu-24.04.4-live-server-amd64.iso" \
             -var "iso_checksum=file:https://releases.ubuntu.com/noble/SHA256SUMS" \
             -var "ssh_timeout=90m" \
-            -var "vbox_boot_wait=20s" \
             -var-file=os_pkrvars/ubuntu/ubuntu-24.04-x86_64.pkrvars.hcl \
             packer_templates/
 
