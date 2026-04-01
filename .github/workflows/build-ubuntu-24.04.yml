@@ -29,7 +29,12 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y qemu-system-x86 qemu-utils ovmf
+          sudo apt-get install -y qemu-system-x86 qemu-utils ovmf cpu-checker
+          # KVM 접근 권한 확보
+          sudo chmod 666 /dev/kvm
+          # 진단: KVM 사용 가능 여부 및 QEMU 바이너리 확인
+          kvm-ok || true
+          which qemu-system-x86_64
 
       - name: Install Vagrant
         run: |
@@ -70,6 +75,8 @@ jobs:
 
       - name: Build Box (QEMU/KVM)
         working-directory: bento
+        env:
+          PACKER_LOG: 1
         run: |
           packer build \
             -var "iso_url=https://releases.ubuntu.com/noble/ubuntu-24.04.4-live-server-amd64.iso" \
