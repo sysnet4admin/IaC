@@ -15,4 +15,7 @@ vmware_guest_os_type    = "ubuntu-64"
 # - arm64(ubuntu-24.04-aarch64.pkrvars.hcl)는 로컬 Mac에서만 빌드하므로 HTTP 방식 유지
 #   → 추후 GitHub Actions 전환 시 이 파일과 동일하게 수정 필요
 cd_files                = ["packer_templates/http/ubuntu/user-data", "packer_templates/http/ubuntu/meta-data"]
-boot_command            = ["<wait>e<wait><down><down><down><end> autoinstall<wait><f10><wait>"]
+# x86_64 GRUB 엔트리(blank line 없음): <down><down>으로 linux 줄 도달
+# arm64는 blank line 있어 <down><down><down> 필요 → 아키텍처별 GRUB 구조 다름
+# ds=nocloud: cidata CD-ROM에서 user-data 읽도록 명시 (seed ISO 방식)
+boot_command            = ["<wait>e<wait><down><down><end> autoinstall ds=nocloud<wait><f10><wait>"]
