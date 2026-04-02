@@ -119,7 +119,7 @@ jobs:
           end
           VAGRANTEOF
           echo '{"provider":"virtualbox"}' > metadata.json
-          tar czf ../ubuntu-24.04-x86_64.virtualbox.box ./*
+          tar cf - ./* | gzip -9 > ../ubuntu-24.04-x86_64.virtualbox.box
           cd ../..
 
       # Secrets 설정: HCP_CLIENT_ID, HCP_CLIENT_SECRET (IaC repo Settings > Secrets)
