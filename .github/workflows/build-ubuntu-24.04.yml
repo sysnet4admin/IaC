@@ -88,8 +88,8 @@ jobs:
       - name: Convert to VirtualBox box
         working-directory: bento
         run: |
-          # qcow2 → vmdk 변환 (streamOptimized: deflate 압축으로 box 용량 대폭 감소)
-          qemu-img convert -f qcow2 -O vmdk -o subformat=streamOptimized \
+          # qcow2 → vmdk 변환 (기본 monolithicSparse, 최종 gzip -9로 압축)
+          qemu-img convert -f qcow2 -O vmdk \
             builds/ubuntu-24.04-x86_64-qemu/ubuntu-24.04-amd64.qcow2 \
             builds/ubuntu-24.04-amd64.vmdk
 
