@@ -77,7 +77,17 @@ build {
       "bento/packer_templates/scripts/ubuntu/systemd_ubuntu.sh",
       "bento/packer_templates/scripts/ubuntu/cleanup_ubuntu.sh",
       "bento/packer_templates/scripts/custom_post_hoon.sh",
-      "bento/packer_templates/scripts/_common/minimize.sh",
+    ]
+    execute_command = "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'"
+  }
+
+  # minimize.sh는 QEMU builder에서 skip되므로, 직접 디스크 zero-fill 수행
+  # zero-fill → qcow2/vmdk 변환 시 빈 공간이 압축되어 box 용량 대폭 감소
+  provisioner "shell" {
+    inline = [
+      "dd if=/dev/zero of=/tmp/whitespace bs=1M || echo 'dd exit code suppressed'",
+      "rm -f /tmp/whitespace",
+      "sync"
     ]
     execute_command = "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'"
   }
