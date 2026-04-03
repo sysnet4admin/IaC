@@ -110,9 +110,17 @@ jobs:
             --output builds/ubuntu-24.04-amd64.ova
 
           # Vagrant box 패키징
+          # Vagrant는 box.ovf / box-disk001.vmdk 파일명을 기대함
           mkdir -p builds/box_tmp
           cd builds/box_tmp
           tar xf ../ubuntu-24.04-amd64.ova
+          # ovf/vmdk 파일명을 Vagrant 규격에 맞게 변경
+          mv *.ovf box.ovf
+          for f in *.vmdk; do
+            new_name="box-disk001.vmdk"
+            sed -i "s|${f}|${new_name}|g" box.ovf
+            mv "$f" "$new_name"
+          done
           cat > Vagrantfile <<'VAGRANTEOF'
           Vagrant.configure("2") do |config|
             config.vm.base_mac = "080027000001"
