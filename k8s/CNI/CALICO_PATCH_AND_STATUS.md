@@ -7,8 +7,8 @@
 
 | 버전 | 파일 | 패치 적용 | 비고 |
 |---|---|---|---|
-| v3.29.2 | `calico-quay-v3.29.2.yaml` | ✅ 적용 | - |
-| v3.30.1 | `calico-quay-v3.30.1.yaml` | ✅ 적용 | - |
+| v3.29.2 | `calico-quay-v3.29.2.yaml` | ❌ 미적용 | - |
+| v3.30.1 | `calico-quay-v3.30.1.yaml` | ❌ 미적용 | - |
 | v3.31.2 | `calico-quay-v3.31.2.yaml` | ✅ 적용 | **현재 사용 버전** |
 
 > 업스트림 이슈 [projectcalico/calico#8368](https://github.com/projectcalico/calico/issues/8368)은
