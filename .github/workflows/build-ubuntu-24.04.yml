@@ -4,13 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Vagrant Cloud 버전 (예: 0.0.1)'
+        description: 'Vagrant Cloud 버전 (예: 1.0.0)'
         required: true
-        default: '0.0.1'
+        default: '1.0.0'
       box_name:
         description: 'Vagrant Cloud Box 이름'
         required: true
-        default: 'sysnet4admin/Ubuntu-k8s-2404-test'
+        default: 'sysnet4admin/Ubuntu-k8s'
 
 env:
   PACKER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # packer init GitHub API rate limit 방지
@@ -75,8 +75,6 @@ jobs:
 
       - name: Build Box (QEMU/KVM)
         working-directory: bento
-        env:
-          PACKER_LOG: 1
         run: |
           packer build \
             -var "iso_url=https://releases.ubuntu.com/noble/ubuntu-24.04.4-live-server-amd64.iso" \
@@ -150,5 +148,6 @@ jobs:
             ${{ github.event.inputs.version }} \
             virtualbox \
             builds/ubuntu-24.04-x86_64.virtualbox.box \
+            --architecture amd64 \
             --release \
             --force
