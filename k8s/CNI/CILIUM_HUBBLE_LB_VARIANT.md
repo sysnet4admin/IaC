@@ -8,10 +8,10 @@
 | 파일 | hubble-ui Service | 용도 | 비고 |
 |---|---|---|---|
 | `cilium-v1.17.13-w-hubble.yaml` | `ClusterIP` | Hubble 포함 기본 매니페스트 | 업스트림 Helm 템플릿 출력 그대로 |
-| `cilium-v1.17.13-w-hubble-LB.yaml` | `LoadBalancer` | hubble-ui를 외부 노출 | **book ch7/7.1.1에서 사용** |
+| `cilium-v1.17.13-w-hubble-lb.yaml` | `LoadBalancer` | hubble-ui를 외부 노출 | **book ch7/7.1.1에서 사용** |
 
 > 두 파일의 차이는 **단 1줄**이다 (hubble-ui Service `type: ClusterIP` → `LoadBalancer`).
-> 검증: `diff cilium-v1.17.13-w-hubble.yaml cilium-v1.17.13-w-hubble-LB.yaml` → 한 줄만 출력.
+> 검증: `diff cilium-v1.17.13-w-hubble.yaml cilium-v1.17.13-w-hubble-lb.yaml` → 한 줄만 출력.
 
 ---
 
@@ -54,7 +54,7 @@ LoadBalancer Service가 실제 IP를 받으려면 `CiliumLoadBalancerIPPool`과
 
 ## 동작 흐름 (vagrant up)
 
-1. `controlplane_node.sh` → `cilium-v1.17.13-w-hubble-LB.yaml` 적용.
+1. `controlplane_node.sh` → `cilium-v1.17.13-w-hubble-lb.yaml` 적용.
    hubble-ui가 `LoadBalancer`로 생성되나 IP Pool이 아직 없어 `EXTERNAL-IP`는 `<pending>`.
 2. `extra_k8s_pkgs.sh` → sleep 600 후 `k8s-svc-pool` 등장 → LB-IPAM이 hubble-ui에 IP 자동 할당.
 3. `7.2.2` → 타입 패치 없이 이미 할당된 LB IP만 출력.
@@ -66,11 +66,11 @@ LoadBalancer Service가 실제 IP를 받으려면 `CiliumLoadBalancerIPPool`과
 ## 적용 규칙 (새 Cilium 버전 업그레이드 시)
 
 1. 새 버전 base 매니페스트(`cilium-vX.Y.Z-w-hubble.yaml`)를 준비한다.
-2. 그 파일을 `cilium-vX.Y.Z-w-hubble-LB.yaml`로 복사한다.
+2. 그 파일을 `cilium-vX.Y.Z-w-hubble-lb.yaml`로 복사한다.
 3. **hubble-ui Service의 `type: "ClusterIP"` 한 줄만** `type: "LoadBalancer"`로 변경한다.
    대상 식별: `name: hubble-ui` 가 있는 Service 블록 (hubble-relay 등 다른 Service와 혼동 주의).
 4. `diff`로 정확히 1줄만 바뀌었는지 검증한다.
-5. book `ch7/7.1.1/controlplane_node.sh`의 apply 대상을 새 `-LB` 파일명으로 교체한다.
+5. book `ch7/7.1.1/controlplane_node.sh`의 apply 대상을 새 `-lb` 파일명으로 교체한다.
 
 > IP Pool / L2 정책은 이 매니페스트가 아니라 `k8s/extra-pkgs/`에서 관리되므로,
 > 버전 업 시 이쪽은 건드릴 필요 없다 (CRD apiVersion 호환만 확인).
@@ -81,7 +81,7 @@ LoadBalancer Service가 실제 IP를 받으려면 `CiliumLoadBalancerIPPool`과
 
 | 파일 | 변경 |
 |---|---|
-| `ch7/7.1.1/controlplane_node.sh` | apply 대상 `w-hubble.yaml` → `w-hubble-LB.yaml` |
+| `ch7/7.1.1/controlplane_node.sh` | apply 대상 `w-hubble.yaml` → `w-hubble-lb.yaml` |
 | `ch7/7.2.2/configure_cilium_connectvity_env.sh` | hubble-ui 타입 패치 로직 제거 (이미 LB이므로) |
 
 ---
