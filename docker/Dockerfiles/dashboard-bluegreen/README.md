@@ -1,5 +1,5 @@
 > 📦 **원본(Source):** https://github.com/k8s-edu/Bkv2_sub_dashboard
-> · branch: `main` · snapshot: `ff6254c`
+> · branch: `main` · snapshot: `5e104c5`
 
 ## 대시보드 앱
 

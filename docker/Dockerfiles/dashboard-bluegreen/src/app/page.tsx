@@ -9,25 +9,27 @@ import LinkedinMenu from './components/LinkedinMenu';
 
 const phase = process.env.NEXT_PUBLIC_PHASE;
 
-const getYYYYMMDD = (date: Date) => date.toISOString().split('T')[0];
+const getYYYYMMDD = (date: Date) => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+};
 
 function generateRandomData(startDate: Date, endDate: Date): Data[] {
-  const data = [];
-  const millisecondsUnit = 1000
-  const dayPeriod = 86400;
-  const bias = Math.random() * 5000;
-  const resolution = Math.floor(Math.random() * bias);
+  const data: Data[] = [];
+  const cursor = new Date(startDate);
+  const fillRatio = 0.7; // 70%만 채우고 나머지는 빈칸(흰색)
 
-  let cursor = startDate.getTime() / millisecondsUnit;
-  for (let i = 0; i < resolution; i++) {
-    cursor += dayPeriod;
-    if (cursor > endDate.getTime() / millisecondsUnit) break;
-    data.push(
-      { value: Math.floor(Math.random() * 100),
-        day: new Date(cursor * millisecondsUnit).toISOString().split('T')[0]
-    })
+  while (cursor <= endDate) {
+    if (Math.random() < fillRatio) {
+      data.push({
+        value: Math.floor(Math.random() * 100),
+        day: getYYYYMMDD(cursor),
+      });
+    }
+    cursor.setDate(cursor.getDate() + 1);
   }
-
 
   return data;
 }
@@ -81,10 +83,7 @@ const Calendar = ({ data, startDate, endDate, width, height }: CalendarProps) =>
 )
 
 export default function Home() {
-  const randBetween = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
-
-  const start = (date: Date) => new Date(date.getFullYear(), 0, randBetween(10,31)); 
-  const startDate = start(new Date());
+  const startDate = new Date(new Date().getFullYear(), 0, 1); // 1월 1일부터
   const endDate = new Date(startDate.getFullYear(), 11, 31);
   const feedData = generateRandomData(startDate, endDate);
   return (
