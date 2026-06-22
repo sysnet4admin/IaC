@@ -9,10 +9,11 @@ set -eu
 # Body served at every path. printf gives a trailing newline (clean curl output).
 printf '%s\n' "$ECHO_TEXT" > /usr/share/nginx/html/index.html
 
-# Plain-text server on $ECHO_PORT; any path returns the body.
+# Plain-text server on $ECHO_PORT (IPv4 + IPv6); any path returns the body.
 cat > /etc/nginx/conf.d/echo.conf <<EOF
 server {
     listen ${ECHO_PORT} default_server;
+    listen [::]:${ECHO_PORT} default_server;
     server_name _;
     root /usr/share/nginx/html;
     charset utf-8;
