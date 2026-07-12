@@ -3,7 +3,7 @@ FROM alpine:3.13.5
 LABEL Name=net-tools Version=3.13.5
 
 USER root
-RUN apk add --no-cache bash tzdata openntpd bind-tools curl
+RUN apk add --no-cache bash tzdata openntpd bind-tools curl jq
 RUN ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
 ENV HOSTNAME net-tools
