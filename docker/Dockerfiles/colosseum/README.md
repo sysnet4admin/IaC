@@ -22,6 +22,20 @@
 
 `log`이 모든 서비스의 기본 태그다. agg만 추가로 `trace`/`profile` 변형을 갖는다.
 
+## Docker Hub 이미지
+
+모두 멀티아치(linux/amd64 + linux/arm64)로 `sysnet4admin`에 푸시된다.
+
+```
+sysnet4admin/colosseum-agg:log
+sysnet4admin/colosseum-agg:trace
+sysnet4admin/colosseum-agg:profile
+sysnet4admin/colosseum-cms:log
+sysnet4admin/colosseum-nti:log
+sysnet4admin/colosseum-prm:log
+sysnet4admin/colosseum-rwd:log
+```
+
 ## 사용
 
 ```bash
