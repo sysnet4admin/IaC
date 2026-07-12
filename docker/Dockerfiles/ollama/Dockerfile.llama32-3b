@@ -1,0 +1,4 @@
+FROM ollama/ollama:0.30.6
+RUN ollama serve & sleep 5 && ollama pull llama3.2:3b && pkill ollama || true
+EXPOSE 11434
+CMD ["serve"]

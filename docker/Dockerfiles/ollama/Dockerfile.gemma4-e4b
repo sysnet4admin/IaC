@@ -1,0 +1,4 @@
+FROM ollama/ollama:0.30.6
+RUN ollama serve & sleep 5 && ollama pull gemma4:e4b-it-qat && pkill ollama || true
+EXPOSE 11434
+CMD ["serve"]
