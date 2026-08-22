@@ -1,0 +1,24 @@
+{
+  "name": "ubuntu-24.04",
+  "version": "202603.30.0",
+  "arch": "aarch64",
+  "build_timestamp": "20260330093418",
+  "packer_command": "packer build -timestamp-ui -force -var cpus=4 -only=virtualbox-iso.vm -var-file=ubuntu-24.04-aarch64.pkrvars.hcl ../../packer_templates",
+  "git_revision": "b402fff2581e8e2b6495ecd484c7b361d24ba0d1",
+  "git_status": "dirty",
+  "box_basename": "ubuntu-24.04",
+  "template": "ubuntu-24.04-aarch64",
+  "packer": "Packer v1.13.1",
+  "providers": [
+    {
+      "name": "virtualbox",
+      "version": "7.1.10",
+      "file": "ubuntu-24.04-aarch64.virtualbox.box",
+      "checksum_type": "sha256",
+      "checksum": "fe25496bc370abc2400400717de2a713a94a512b7b757ad42a6d6c04ae3b4e97",
+      "size": "940 MB",
+      "build_time": 532,
+      "build_cpus": "4"
+    }
+  ]
+}
