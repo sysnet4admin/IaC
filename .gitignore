@@ -1,3 +1,6 @@
 .vagrant/
 .DS_Store
 *.vmdk
+
+# harbor build.sh가 clone하는 Harbor 소스 (자체 .git 보유, 160MB+)
+harbor-src*/
