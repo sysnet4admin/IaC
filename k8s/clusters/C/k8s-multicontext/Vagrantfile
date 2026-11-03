@@ -33,6 +33,7 @@ Vagrant.configure("2") do |config|
       cfg.vm.network "private_network", ip: "192.168.1.#{cv[1]}"
       cfg.vm.network "forwarded_port", guest: 22, host: "60#{cv[1]}", auto_correct: true, id: "ssh"
       cfg.vm.synced_folder "../data", "/vagrant", disabled: true 
+      cfg.vm.provision "shell", path: "vault_repo_4_CentOS.sh"
       cfg.vm.provision "shell", path: "k8s_env_build.sh"
       cfg.vm.provision "shell", path: "k8s_pkg_cfg.sh", args: [ k8s_V, docker_V, ctrd_V ]
       cfg.vm.provision "shell", path: "master_node.sh", args: [ cv[1], cv[0] ]
@@ -56,6 +57,7 @@ Vagrant.configure("2") do |config|
         cfg.vm.network "private_network", ip: "192.168.1.#{cv[2]}#{i}"
         cfg.vm.network "forwarded_port", guest: 22, host: "60#{cv[2]}#{i}", auto_correct: true, id: "ssh"
         cfg.vm.synced_folder "../data", "/vagrant", disabled: true
+        cfg.vm.provision "shell", path: "vault_repo_4_CentOS.sh"
         cfg.vm.provision "shell", path: "k8s_env_build.sh"
         cfg.vm.provision "shell", path: "k8s_pkg_cfg.sh", args: [ k8s_V, docker_V, ctrd_V ]
         cfg.vm.provision "shell", path: "work_nodes.sh", args: cv[1]
@@ -80,6 +82,7 @@ Vagrant.configure("2") do |config|
     cfg.vm.network "private_network", ip: "192.168.1.10"
     cfg.vm.network "forwarded_port", guest: 22, host: 60010, auto_correct: true, id: "ssh"
     cfg.vm.synced_folder "../data", "/vagrant", disabled: true
+    cfg.vm.provision "shell", path: "vault_repo_4_CentOS.sh"
     cfg.vm.provision "shell", path: "console.sh", args: [ k8s_V, "#{cl_val[0][1]}", "#{cl_val[1][1]}", "#{cl_val[2][1]}" ]
   end
 
