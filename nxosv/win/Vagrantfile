@@ -14,6 +14,7 @@ Vagrant.configure("2") do |config|
   #NXOSv 7 version 
   config.vm.define "nxosv#{nx_A1}" do |cfg|
     cfg.vm.box = "sysnet4admin/nxosv_v7"
+    cfg.vm.box_url = "https://box.kuberneteslab.dev/sysnet4admin/nxosv_v7"
     cfg.ssh.insert_key = false 
     cfg.vm.boot_timeout = 480
     cfg.vm.guest = :freebsd
@@ -51,6 +52,7 @@ Vagrant.configure("2") do |config|
   #NXOSv 9 version 
   config.vm.define "nxosv#{nx_A2}" do |cfg|
     cfg.vm.box = "sysnet4admin/nxosv_v9"
+    cfg.vm.box_url = "https://box.kuberneteslab.dev/sysnet4admin/nxosv_v9"
     cfg.ssh.insert_key = false 
     cfg.vm.boot_timeout = 960
     cfg.vm.guest = :freebsd
@@ -91,6 +93,7 @@ Vagrant.configure("2") do |config|
   
   config.vm.define "SDN-CTRL" do |cfg|
     cfg.vm.box = "sysnet4admin/CentOS-k8s"
+    cfg.vm.box_url = "https://box.kuberneteslab.dev/sysnet4admin/CentOS-k8s"
     cfg.vm.host_name = "nxos-ctrl"
     cfg.vm.network "private_network", virtualbox__intnet: "eth1", ip: "#{hst_A}.#{sdn_A}" 
     cfg.vm.network "forwarded_port", guest: 22, host: "600#{sdn_A}", auto_correct: true, id: "ssh"

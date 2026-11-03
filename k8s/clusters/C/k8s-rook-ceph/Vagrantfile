@@ -20,6 +20,7 @@ Vagrant.configure("2") do |config|
 
     config.vm.define "rc-m-k8s-#{k8s_V[0..3]}" do |cfg|
       cfg.vm.box = "sysnet4admin/CentOS-k8s"
+      cfg.vm.box_url = "https://box.kuberneteslab.dev/sysnet4admin/CentOS-k8s"
       cfg.vm.provider "virtualbox" do |vb|
         vb.name = "rc-m-k8s-#{k8s_V[0..3]}(github_SysNet4Admin)"
         vb.cpus = 2
@@ -43,6 +44,7 @@ Vagrant.configure("2") do |config|
   (1..N).each do |i|
     config.vm.define "rc-w#{i}-k8s-#{k8s_V[0..3]}" do |cfg|
       cfg.vm.box = "sysnet4admin/CentOS-k8s"
+      cfg.vm.box_url = "https://box.kuberneteslab.dev/sysnet4admin/CentOS-k8s"
       cfg.vm.provider "virtualbox" do |vb|
         vb.name = "rc-w#{i}-k8s-#{k8s_V[0..3]}(github_SysNet4Admin)"
         vb.cpus = 1
@@ -66,6 +68,7 @@ Vagrant.configure("2") do |config|
   (1..M).each do |i|
     config.vm.define "rc-s#{i}-k8s-#{k8s_V[0..3]}" do |cfg|
       cfg.vm.box = "sysnet4admin/CentOS-k8s"
+      cfg.vm.box_url = "https://box.kuberneteslab.dev/sysnet4admin/CentOS-k8s"
       cfg.vm.provider "virtualbox" do |vb|
         vb.name = "rc-s#{i}-k8s-#{k8s_V[0..3]}(github_SysNet4Admin)"
         vb.cpus = 1

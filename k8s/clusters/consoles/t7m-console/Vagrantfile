@@ -9,6 +9,7 @@ t7m_V = '1.5.0'                     # Configurable - Terraform Version
 Vagrant.configure("2") do |config|
   config.vm.define "t7m-Console" do |cfg|
     cfg.vm.box = "sysnet4admin/Ubuntu-k8s"
+    cfg.vm.box_url = "https://box.kuberneteslab.dev/sysnet4admin/Ubuntu-k8s"
     cfg.vm.provider "virtualbox" do |vb|
       vb.name = "t7m-Console"
       vb.cpus = 2

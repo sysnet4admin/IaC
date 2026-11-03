@@ -8,6 +8,7 @@ docker_V = '5:24.0.6-1~ubuntu.22.04~jammy' # Docker
 Vagrant.configure("2") do |config|
   config.vm.define "rubra-ai" do |cfg|
     cfg.vm.box = "sysnet4admin/Ubuntu-k8s"
+    cfg.vm.box_url = "https://box.kuberneteslab.dev/sysnet4admin/Ubuntu-k8s"
     cfg.vm.provider "virtualbox" do |vb|
       vb.name = "rubra-ai"
       vb.cpus = 8
