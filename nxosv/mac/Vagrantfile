@@ -44,7 +44,7 @@ Vagrant.configure("2") do |config|
     if VAGRANT_COMMAND = "up"
        cfg.ssh.username = "admin"
        cfg.ssh.password = "vagrant"
-       cfg.ssh.shell = "sleep 120 ; conf t ; ho nxosv#{nx_A1} ; int e1/1 ; no sw ; ip ad #{hst_A}.#{nx_A1}/24 ; copy r s"
+       cfg.ssh.shell = "sleep 120 ; conf t ; ho nxosv#{nx_A1} ; int e1/1 ; no sw ; ip ad #{hst_A}.#{nx_A1}/24 ; no sh ; copy r s"
     end
 
   end
@@ -70,7 +70,7 @@ Vagrant.configure("2") do |config|
     if VAGRANT_COMMAND = "up"
        cfg.ssh.username = "admin"
        cfg.ssh.password = "vagrant"
-       cfg.ssh.shell = "sleep 240 ; conf t ; ho nxosv#{nx_A2} ; int e1/1 ; no sw ; ip ad #{hst_A}.#{nx_A2}/24 ; copy r s"
+       cfg.ssh.shell = "sleep 240 ; conf t ; ho nxosv#{nx_A2} ; int e1/1 ; no sw ; ip ad #{hst_A}.#{nx_A2}/24 ; no sh ; copy r s"
     end
 
     #VM name & HW config
@@ -78,7 +78,7 @@ Vagrant.configure("2") do |config|
       vb.name = "NXOSv#{nx_A2}(github_SysNet4Admin)"
       vb.customize ["modifyvm", :id, "--groups", "/NXOSv_SDN(github-SysNet4Admin)"]
       vb.memory = 6144
-      vb.customize ["modifyvm", :id, "--uart1", "0x252", "2"]
+      vb.customize ["modifyvm", :id, "--uart1", "0x3F8", "4"]
       #var cannot apply for pipe. so pipe need to change manually cur: nxosv252
       vb.customize ["modifyvm", :id,"--uartmode1","server",'/tmp/nxosv252']
       vb.customize ['modifyvm', :id,'--nicpromisc2','allow-all']
