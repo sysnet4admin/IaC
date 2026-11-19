@@ -1,5 +1,10 @@
 # Ubuntu 24.04 Vagrant Box 빌드 아키텍처 결정
 
+> **2026-11 이후:** `sysnet4admin/Ubuntu-k8s` box의 빌드와 게시는 [sysnet4admin/k8slab](https://github.com/sysnet4admin/k8slab)의
+> `box/`에서 한다. Ubuntu 클라우드 이미지를 chroot로 설정해 amd64와 arm64를 모두 GitHub Actions에서 3분 안에 만들고, R2와
+> `vg-box/k8s`에 올린다. 이 문서의 Packer와 bento 절차, HCP Vagrant(Vagrant Cloud) 업로드는 기록으로 남긴다. HCP Vagrant는
+> 2026-12-31에 운영을 끝낸다.
+
 ## 결론
 
 | 아키텍처 | 빌드 방법 | 이유 |

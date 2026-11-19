@@ -1,3 +1,5 @@
+# 2026-11 이후 사용하지 않는다(비활성화). Ubuntu-k8s box의 빌드와 게시는 sysnet4admin/k8slab의 box.yml에서 한다.
+# HCP Vagrant(Vagrant Cloud)는 2026-12-31에 운영을 끝낸다. 이 파일은 기록으로 남긴다.
 name: Build Ubuntu 24.04 Vagrant Box (arm64, QEMU)
 
 # arm64 box의 기본 빌드는 로컬 Mac(M 시리즈)이다(bento/BUILD_ARCH_DECISION.md). 이 워크플로는 Mac을 사용할 수 없을 때 손으로 실행한다.
